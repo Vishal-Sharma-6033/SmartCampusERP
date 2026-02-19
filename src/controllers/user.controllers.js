@@ -1,46 +1,63 @@
-import { ApiError } from "../utils/ApiErrors.js"
-import { asyncHandler } from "../utils/asyncHandler.js"
+import { ApiError } from "../utils/ApiErrors.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import {User} from "../models/user.models.js"
+import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 
+// const generateAccessTokenAndrefreshToken = asyncHandler(async (userId) => {
+//   try {
+//     const user = await User.findById(userId);
+//     if (!user) {
+//       throw new ApiError(500, "User not found");
+//     }
 
-const genrateAccessToken= asyncHandler(async(userId)=>{
-    try {
-        const user= await User.findById(userId);
-        if(!user){
-            throw new ApiError(500,"User not found")
-        }
+//     const accessToken = user.generateAccessToken();
+//     const refreshToken = user.generateRefreshToken();
+//     user.refreshToken = refreshToken;
 
-        const accessToken=user.generateAccessToken();
-        const refressToken=user.generateRefreshtoken();
-        console.log("Access Token:-",accessToken)
-        console.log("Refress Token:-",refressToken)
-        user.refressToken=refressToken
-        await user.save({validateBeforeSave:false})
+//     return { refressToken, accessToken };
+//   } catch (err) {
+//     console.log("Tocken Err:-", err);
+//     throw new ApiError(500, "Error genrating access token");
+//   }
+// });
+const generateAccessTokenAndRefreshToken = async (userId) => {
+  try {
+    const user = await User.findById(userId);
 
-        return {refressToken,accessToken}
-
-        
-    } catch (err) {
-        console.log("Tocken Err:-",err)
-        throw new ApiError(500,"Error genrating access token")
-    }
-})
-
-const registerUser=asyncHandler(async(req,res)=>{
-    const {Name, Email, Password, Role}= req.body;
-
-    if(!Name || !Email || !Password || !Role){
-        throw new ApiError(400,"All fields are required")
-    }
-    const existingUser= await User.findOne({$or:[{Email}, {Password}]})
-    if(existingUser){
-        throw new ApiError(400,"User with this email or password already exists")
+    if (!user) {
+      throw new ApiError(500, "User not found");
     }
 
-let ProfileImagelocalPath;
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+
+    user.refreshToken = refreshToken;
+
+    await user.save({ validateBeforeSave: false });
+
+    return { accessToken, refreshToken };
+
+  } catch (err) {
+    console.log("Token Error:", err);
+    throw new ApiError(500, "Error generating access token");
+  }
+};
+
+
+const registerUser = asyncHandler(async (req, res) => {
+  const { Name, Email, Password, Role } = req.body;
+
+  if (!Name || !Email || !Password || !Role) {
+    throw new ApiError(400, "All fields are required");
+  }
+  const existingUser = await User.findOne({ $or: [{ Email }, { Password }] });
+  if (existingUser) {
+    throw new ApiError(400, "User with this email or password already exists");
+  }
+
+  let ProfileImagelocalPath;
   if (
     req.files &&
     Array.isArray(req.files.ProfileImage) &&
@@ -49,25 +66,25 @@ let ProfileImagelocalPath;
     ProfileImagelocalPath = req.files.ProfileImage[0].path;
   }
 
-  if(!ProfileImagelocalPath){
-    throw new ApiError(400,"Profile image is required")
+  if (!ProfileImagelocalPath) {
+    throw new ApiError(400, "Profile image is required");
   }
 
-    const profileImage= await uploadOnCloudinary(ProfileImagelocalPath)
+  const profileImage = await uploadOnCloudinary(ProfileImagelocalPath);
 
-    if(!profileImage){
-        throw new ApiError(500,"Error uploading profile image")
-    }
+  if (!profileImage) {
+    throw new ApiError(500, "Error uploading profile image");
+  }
 
-    const newUser= await User.create({
-        Name,
-        Email,
-        Password,
-        Role,
-        ProfileImage:profileImage.url
-    })
-    
-    const createdUser = await User.findById(newUser._id).select(
+  const newUser = await User.create({
+    Name,
+    Email,
+    Password,
+    Role,
+    ProfileImage: profileImage.url,
+  });
+
+  const createdUser = await User.findById(newUser._id).select(
     "-password -refreshToken"
   );
 
@@ -78,9 +95,49 @@ let ProfileImagelocalPath;
   return res
     .status(201)
     .json(new ApiResponse(201, createdUser, "User registered successfully"));
+});
 
-})
+const loginUser = asyncHandler(async (req, res) => {
+  const { Email, Password } = req.body;
 
+  if (!Email || !Password) {
+    throw new ApiError(400, "All fields are required");
+  }
 
+  const user = await User.findOne({ Email });
+  if (!user) {
+    throw new ApiError(400, "User with this email or password does not exist");
+  }
 
-export {genrateAccessToken,registerUser}
+  const isPasswordValid = await user.isPasswordCorrect(Password);
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Invalid password");
+  }
+
+  const { accessToken, refreshToken } =
+  await generateAccessTokenAndRefreshToken(user._id);
+
+  const loggedInUser = await User.findById(user._id).select(
+    "-Password -refreshToken"
+  );
+
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res
+  .status(200)
+  .cookie("accessToken", accessToken, options)
+  .cookie("refreshToken", refreshToken, options)
+  .json(
+    new ApiResponse(
+      200,
+      { refreshToken, user: loggedInUser },
+      "User logged in successfully"
+    )
+  );
+
+});
+
+export { registerUser, loginUser };

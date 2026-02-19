@@ -42,8 +42,8 @@ userSchema.pre("save", async function () {
 });
 
 //We compare entered password with hashed password in DB
-userSchema.methods.isPasswordCorrect = async function (password) {
-  return await bcrypt.compare(password, this.password);
+userSchema.methods.isPasswordCorrect = async function (Password) {
+  return await bcrypt.compare(Password, this.Password);
 };
 
 userSchema.methods.generateAccessToken = function () {
@@ -51,7 +51,7 @@ userSchema.methods.generateAccessToken = function () {
     {
       userId: this._id,
       Name: this.Name,
-      email: this.email,
+      Email: this.Email,
       Role: this.Role,
     },
     process.env.ACCESS_TOKEN_SECRET,
@@ -61,7 +61,7 @@ userSchema.methods.generateAccessToken = function () {
   );
 };
 
-userSchema.methods.generateRefreshtoken = function () {
+userSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     {
       userId: this._id,
@@ -72,5 +72,6 @@ userSchema.methods.generateRefreshtoken = function () {
     }
   );
 };
+
 
 export const User = mongoose.model("User", userSchema);

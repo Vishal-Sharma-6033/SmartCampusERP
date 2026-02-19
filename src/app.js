@@ -18,6 +18,7 @@ app.use(cookieParser()); // to parse cookies
 import userRoutes from "./routes/user.routes.js";
 
 
+
 //Use Routes 
 app.use("/api/v1/users",userRoutes)
 
