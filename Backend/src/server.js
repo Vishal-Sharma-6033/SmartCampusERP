@@ -1,15 +1,11 @@
-import dotenv from 'dotenv';
-import app from './app.js';
-import connectDb from './config/db.js';
+import express from 'express';
+const app = express();
 
-dotenv.config()
 
-// DataBase Connected
-connectDb()
+app.get("/",(req,res)=>{
+    res.send("WORKING 100%")
+})
 
-const PORT = process.env.PORT || 6000;
-
-app.listen(PORT, ()=>{
-    console.log(`🚀 Server running on port ${PORT}`);
-
+app.listen(3000,()=>{
+    console.log("Server is running on port 3000")
 })
