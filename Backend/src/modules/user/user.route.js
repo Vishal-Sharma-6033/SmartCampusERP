@@ -1,48 +1,64 @@
 import express from "express";
-import { createUser } from "./user.controller.js";
 import authMiddleware from "../../middlewares/auth.middleware.js";
 import allowRoles from "../../middlewares/role.middleware.js";
 import { ROLES } from "../../config/constants.js";
-import { getMyProfile } from "./user.controller.js";
-import { getAllUsers } from "./user.controller.js"; 
-import roleMiddleware from "../../middlewares/role.middleware.js";
-import { updateUser, deleteUser, linkParentToStudent } from "./user.controller.js";
+
+import {
+  createUser,
+  getMyProfile,
+  getAllUsers,
+  updateUser,
+  deleteUser,
+  linkParentToStudent,
+} from "./user.controller.js";
+
 const router = express.Router();
 
-//  Only ADMIN can create users
+// ✅ CREATE USER (ADMIN / SUPER_ADMIN)
 router.post(
   "/create",
   authMiddleware,
   allowRoles(ROLES.ADMIN, ROLES.SUPER_ADMIN),
   createUser
 );
+
+// ✅ GET ALL USERS
 router.get(
   "/",
   authMiddleware,
-  roleMiddleware("ADMIN", "SUPER_ADMIN"),
+  allowRoles(ROLES.ADMIN, ROLES.SUPER_ADMIN),
   getAllUsers
 );
-router.get("/me", authMiddleware, getMyProfile);
 
+// ✅ GET MY PROFILE
+router.get(
+  "/me",
+  authMiddleware,
+  getMyProfile
+);
 
+// ✅ UPDATE USER
 router.put(
   "/:id",
   authMiddleware,
-  roleMiddleware("ADMIN", "SUPER_ADMIN"),
+  allowRoles(ROLES.ADMIN, ROLES.SUPER_ADMIN),
   updateUser
 );
+
+// ✅ DELETE USER
 router.delete(
   "/:id",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  allowRoles(ROLES.ADMIN),
   deleteUser
 );
+
+// ✅ LINK PARENT TO STUDENT
 router.post(
   "/link-parent",
   authMiddleware,
-  roleMiddleware("ADMIN"),
+  allowRoles(ROLES.ADMIN),
   linkParentToStudent
 );
-
 
 export default router;

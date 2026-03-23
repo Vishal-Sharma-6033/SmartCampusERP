@@ -2,60 +2,64 @@ import * as UserService from "./user.service.js";
 import asyncHandler from "../../utils/asyncHandler.js";
 import ApiResponse from "../../utils/ApiResponse.js";
 
-// CREATE USER
+// ✅ CREATE USER (Admin use)
 export const createUser = asyncHandler(async (req, res) => {
-  const user = await UserService.createUser(req.body, req.tenant._id);
+  const user = await UserService.createUser(req.body);
 
-  res.status(201).json(new ApiResponse(201, user, "User created successfully"));
+  res.status(201).json(
+    new ApiResponse(201, user, "User created successfully")
+  );
 });
 
-// GET PROFILE
+// ✅ GET MY PROFILE
 export const getMyProfile = asyncHandler(async (req, res) => {
-  const user = await UserService.getUserById(req.user.id, req.tenant._id);
+  const user = await UserService.getUserById(req.user.id);
 
-  res
-    .status(200)
-    .json(new ApiResponse(200, user, "Profile fetched successfully"));
+  res.status(200).json(
+    new ApiResponse(200, user, "Profile fetched successfully")
+  );
 });
 
-// UPDATE USER
+// ✅ UPDATE USER
 export const updateUser = asyncHandler(async (req, res) => {
   const user = await UserService.updateUser(
     req.params.id,
-    req.body,
-    req.tenant._id,
+    req.body
   );
 
-  res.status(200).json(new ApiResponse(200, user, "User updated successfully"));
+  res.status(200).json(
+    new ApiResponse(200, user, "User updated successfully")
+  );
 });
 
-// DELETE USER
+// ✅ DELETE USER (Soft delete)
 export const deleteUser = asyncHandler(async (req, res) => {
-  await UserService.deleteUser(req.params.id, req.tenant._id);
+  await UserService.deleteUser(req.params.id);
 
-  res.status(200).json(new ApiResponse(200, null, "User deleted successfully"));
+  res.status(200).json(
+    new ApiResponse(200, null, "User deleted successfully")
+  );
 });
 
-// GET ALL USERS
+// ✅ GET ALL USERS (with search + pagination)
 export const getAllUsers = asyncHandler(async (req, res) => {
-  const result = await UserService.getAllUsers(req.tenant._id, req.query);
+  const result = await UserService.getAllUsers(req.query);
 
-  res
-    .status(200)
-    .json(new ApiResponse(200, result, "Users fetched successfully"));
+  res.status(200).json(
+    new ApiResponse(200, result, "Users fetched successfully")
+  );
 });
 
-// LINK PARENT TO STUDENT
+// ✅ LINK PARENT TO STUDENT
 export const linkParentToStudent = asyncHandler(async (req, res) => {
   const { parentId, studentId } = req.body;
 
   const result = await UserService.linkParentToStudent(
     parentId,
-    studentId,
-    req.tenant._id,
+    studentId
   );
 
-  res
-    .status(200)
-    .json(new ApiResponse(200, result, "Parent linked to student"));
+  res.status(200).json(
+    new ApiResponse(200, result, "Parent linked to student")
+  );
 });

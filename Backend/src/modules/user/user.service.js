@@ -3,39 +3,43 @@ import bcrypt from "bcryptjs";
 import ApiError from "../../utils/ApiError.js";
 import { ROLES } from "../../config/constants.js";
 
-// CREATE USER
-export const createUser = async (data, tenantId) => {
-  //  Tenant-based check
+// ✅ CREATE USER
+export const createUser = async (data) => {
   const existingUser = await User.findOne({
     email: data.email,
-    tenantId,
   });
 
   if (existingUser) {
-    throw new ApiError(400, "User already exists in this tenant");
+    throw new ApiError(400, "User already exists");
   }
+
+  // ❌ Prevent SUPER_ADMIN creation
   if (data.role === ROLES.SUPER_ADMIN) {
     throw new ApiError(403, "Cannot assign SUPER_ADMIN role");
   }
+
+  // 🔐 hash password
   const hashedPassword = await bcrypt.hash(data.password, 10);
+
+  // 🎯 default role
   if (!data.role) {
     data.role = ROLES.STUDENT;
   }
+
   const user = await User.create({
     ...data,
-    tenantId,
     password: hashedPassword,
   });
 
-  return user;
+  const userObj = user.toObject();
+  delete userObj.password;
+
+  return userObj;
 };
 
-// GET USER BY  ID
-export const getUserById = async (id, tenantId) => {
-  const user = await User.findOne({
-    _id: id,
-    tenantId,
-  }).select("-password");
+// ✅ GET USER BY ID
+export const getUserById = async (id) => {
+  const user = await User.findById(id).select("-password");
 
   if (!user) {
     throw new ApiError(404, "User not found");
@@ -44,29 +48,25 @@ export const getUserById = async (id, tenantId) => {
   return user;
 };
 
-// UPDATE USER
-export const updateUser = async (userId, data, tenantId) => {
-  const user = await User.findOne({
-    _id: userId,
-    tenantId,
-  });
+// ✅ UPDATE USER
+export const updateUser = async (userId, data) => {
+  const user = await User.findById(userId);
 
   if (!user) {
     throw new ApiError(404, "User not found");
   }
 
-  // ❌ Prevent SUPER_ADMIN change
-  if (user.role === "SUPER_ADMIN") {
+  // ❌ prevent SUPER_ADMIN modification
+  if (user.role === ROLES.SUPER_ADMIN) {
     throw new ApiError(403, "Cannot modify SUPER_ADMIN");
   }
 
-  // 🔐 Prevent invalid role
+  // 🔐 validate role
   if (data.role && !Object.values(ROLES).includes(data.role)) {
     throw new ApiError(400, "Invalid role");
   }
 
   Object.assign(user, data);
-
   await user.save();
 
   const userObj = user.toObject();
@@ -75,12 +75,9 @@ export const updateUser = async (userId, data, tenantId) => {
   return userObj;
 };
 
-// DELETE USER
-export const deleteUser = async (userId, tenantId) => {
-  const user = await User.findOne({
-    _id: userId,
-    tenantId,
-  });
+// ✅ DELETE USER (soft delete)
+export const deleteUser = async (userId) => {
+  const user = await User.findById(userId);
 
   if (!user) {
     throw new ApiError(404, "User not found");
@@ -92,16 +89,15 @@ export const deleteUser = async (userId, tenantId) => {
   return true;
 };
 
-// GET ALL USERS
-export const getAllUsers = async (tenantId, query) => {
+// ✅ GET ALL USERS (pagination + search + filter)
+export const getAllUsers = async (query) => {
   const { page = 1, limit = 10, search = "", role } = query;
 
   const filter = {
-    tenantId,
     isActive: true,
   };
 
-  // 🔍 Search
+  // 🔍 search
   if (search) {
     filter.$or = [
       { name: { $regex: search, $options: "i" } },
@@ -109,7 +105,7 @@ export const getAllUsers = async (tenantId, query) => {
     ];
   }
 
-  // 🎯 Role filter
+  // 🎯 role filter
   if (role) {
     filter.role = role;
   }
@@ -130,31 +126,30 @@ export const getAllUsers = async (tenantId, query) => {
   };
 };
 
-// LINK PARENT TO STUDENT
-export const linkParentToStudent = async (parentId, studentId, tenantId) => {
-  const parent = await User.findOne({ _id: parentId, tenantId });
-  const student = await User.findOne({ _id: studentId, tenantId });
+// ✅ LINK PARENT TO STUDENT
+export const linkParentToStudent = async (parentId, studentId) => {
+  const parent = await User.findById(parentId);
+  const student = await User.findById(studentId);
 
   if (!parent || !student) {
     throw new ApiError(404, "User not found");
   }
 
-  // ✅ Role check
-  if (parent.role !== "PARENT") {
+  // ✅ role validation
+  if (parent.role !== ROLES.PARENT) {
     throw new ApiError(400, "User is not a parent");
   }
 
-  if (student.role !== "STUDENT") {
+  if (student.role !== ROLES.STUDENT) {
     throw new ApiError(400, "User is not a student");
   }
 
-  // 🔥 Prevent duplicate
+  // 🔥 prevent duplicate
   if (parent.parentProfile.children.includes(studentId)) {
     throw new ApiError(400, "Already linked");
   }
 
   parent.parentProfile.children.push(studentId);
-
   await parent.save();
 
   return parent;

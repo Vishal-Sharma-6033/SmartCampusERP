@@ -1,85 +1,70 @@
 import asyncHandler from "../../utils/asyncHandler.js";
 import ApiResponse from "../../utils/ApiResponse.js";
+
 import {
   createSubjectService,
-  getSubjectsBySemesterService,
+  getSubjectsService,
   getSubjectByIdService,
   getStudentDashboardService,
-} from "./academic.service.js";
-import {
   updateSubjectService,
   deleteSubjectService,
   addStudentToSubjectService,
   removeStudentFromSubjectService,
 } from "./academic.service.js";
 
-
-// CREATE SUBJECT
+// CREATE
 export const createSubject = asyncHandler(async (req, res) => {
-  const subject = await createSubjectService(req.body, req.tenantId);
+  const subject = await createSubjectService(req.body);
   res.status(201).json(new ApiResponse(201, subject, "Subject created"));
 });
 
-// GET SUBJECT
+// GET ALL
 export const getSubjects = asyncHandler(async (req, res) => {
   const { semester } = req.query;
-  const subjects = await getSubjectsBySemesterService(semester, req.tenantId);
+  const subjects = await getSubjectsService(semester);
 
   res.json(new ApiResponse(200, subjects));
 });
 
-// GET SUBJECT BY ID
+// GET BY ID
 export const getSubjectById = asyncHandler(async (req, res) => {
-  const subject = await getSubjectByIdService(req.params.id, req.tenantId);
-
+  const subject = await getSubjectByIdService(req.params.id);
   res.json(new ApiResponse(200, subject));
 });
 
-// GET STUDENT DASHBOARD
+// STUDENT DASHBOARD
 export const getStudentDashboard = asyncHandler(async (req, res) => {
-  const data = await getStudentDashboardService(
-    req.params.studentId,
-    req.tenantId,
-  );
-
+  const data = await getStudentDashboardService(req.params.studentId);
   res.json(new ApiResponse(200, data));
 });
 
-//  UPDATE
+// UPDATE
 export const updateSubject = asyncHandler(async (req, res) => {
-  const subject = await updateSubjectService(
-    req.params.id,
-    req.body,
-    req.tenantId,
-  );
-
-  res.json(new ApiResponse(200, subject, "Subject updated"));
+  const subject = await updateSubjectService(req.params.id, req.body);
+  res.json(new ApiResponse(200, subject, "Updated"));
 });
 
-//  DELETE
+// DELETE
 export const deleteSubject = asyncHandler(async (req, res) => {
-  await deleteSubjectService(req.params.id, req.tenantId);
-
-  res.json(new ApiResponse(200, null, "Subject deleted"));
+  await deleteSubjectService(req.params.id);
+  res.json(new ApiResponse(200, null, "Deleted"));
 });
 
-//  ADD STUDENT
+// ADD STUDENT
 export const addStudent = asyncHandler(async (req, res) => {
   const subject = await addStudentToSubjectService(
     req.params.id,
-    req.body.studentId,
-    req.tenantId,
+    req.body.studentId
   );
 
   res.json(new ApiResponse(200, subject, "Student added"));
 });
 
-//  REMOVE STUDENT
+// REMOVE STUDENT
 export const removeStudent = asyncHandler(async (req, res) => {
   const subject = await removeStudentFromSubjectService(
     req.params.id,
-    req.body.studentId,
-    req.tenantId,
+    req.body.studentId
   );
 
   res.json(new ApiResponse(200, subject, "Student removed"));

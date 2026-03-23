@@ -1,38 +1,45 @@
 import Subject from "./subject.model.js";
 import ApiError from "../../utils/ApiError.js";
 
-
 // CREATE SUBJECT
-export const createSubjectService = async (data, tenantId) => {
-  console.log("SERVICE TENANT:", tenantId);
+export const createSubjectService = async (data) => {
+  const { name, code, semester } = data;
 
-  return await Subject.create({ ...data, tenantId });
+  if (!name || !code || !semester) {
+    throw new ApiError(400, "Required fields missing");
+  }
+
+  const subject = await Subject.create({
+    ...data,
+    students: data.students || [], // fallback
+  });
+
+  return subject;
 };
+// GET SUBJECTS (SEMESTER FILTER OPTIONAL)
+export const getSubjectsService = async (semester) => {
+  const filter = semester ? { semester: Number(semester) } : {};
 
-// GET SUB BY SEMESTER SERVICE
-export const getSubjectsBySemesterService = async (semester, tenantId) => {
-  return await Subject.find({ semester: Number(semester), tenantId })
+  return await Subject.find(filter)
     .populate("teacher", "name email")
     .populate("students", "name email");
 };
 
-
-// GET SUB BY ID
-export const getSubjectByIdService = async (id, tenantId) => {
-  const subject = await Subject.findOne({ _id: id, tenantId })
-    .populate("teacher")
-    .populate("students");
+// GET SUBJECT BY ID
+export const getSubjectByIdService = async (id) => {
+  const subject = await Subject.findById(id)
+    .populate("teacher", "name email")
+    .populate("students", "name email");
 
   if (!subject) throw new ApiError(404, "Subject not found");
 
   return subject;
 };
 
-// GET STUDENT DASHBOARD
-export const getStudentDashboardService = async (studentId, tenantId) => {
+// STUDENT DASHBOARD
+export const getStudentDashboardService = async (studentId) => {
   const subjects = await Subject.find({
     students: studentId,
-    tenantId,
   }).populate("teacher", "name");
 
   return {
@@ -41,9 +48,9 @@ export const getStudentDashboardService = async (studentId, tenantId) => {
   };
 };
 
-//  UPDATE SUBJECT
-export const updateSubjectService = async (id, data, tenantId) => {
-  const subject = await Subject.findOneAndUpdate({ _id: id, tenantId }, data, {
+// UPDATE SUBJECT
+export const updateSubjectService = async (id, data) => {
+  const subject = await Subject.findByIdAndUpdate(id, data, {
     new: true,
   });
 
@@ -52,28 +59,21 @@ export const updateSubjectService = async (id, data, tenantId) => {
   return subject;
 };
 
-//  DELETE SUBJECT
-export const deleteSubjectService = async (id, tenantId) => {
-  const subject = await Subject.findOneAndDelete({
-    _id: id,
-    tenantId,
-  });
+// DELETE SUBJECT
+export const deleteSubjectService = async (id) => {
+  const subject = await Subject.findByIdAndDelete(id);
 
   if (!subject) throw new ApiError(404, "Subject not found");
 
   return subject;
 };
 
-//  ADD STUDENT
-export const addStudentToSubjectService = async (
-  subjectId,
-  studentId,
-  tenantId,
-) => {
-  const subject = await Subject.findOneAndUpdate(
-    { _id: subjectId, tenantId },
-    { $addToSet: { students: studentId } }, // no duplicate
-    { new: true },
+// ADD STUDENT
+export const addStudentToSubjectService = async (subjectId, studentId) => {
+  const subject = await Subject.findByIdAndUpdate(
+    subjectId,
+    { $addToSet: { students: studentId } },
+    { new: true }
   );
 
   if (!subject) throw new ApiError(404, "Subject not found");
@@ -81,16 +81,15 @@ export const addStudentToSubjectService = async (
   return subject;
 };
 
-//  REMOVE STUDENT
+// REMOVE STUDENT
 export const removeStudentFromSubjectService = async (
   subjectId,
-  studentId,
-  tenantId,
+  studentId
 ) => {
-  const subject = await Subject.findOneAndUpdate(
-    { _id: subjectId, tenantId },
+  const subject = await Subject.findByIdAndUpdate(
+    subjectId,
     { $pull: { students: studentId } },
-    { new: true },
+    { new: true }
   );
 
   if (!subject) throw new ApiError(404, "Subject not found");

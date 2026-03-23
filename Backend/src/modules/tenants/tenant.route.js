@@ -1,9 +1,9 @@
-import express from "express";
-import { createTenantController } from "./tenant.controller.js";
+// import express from "express";
+// import { createTenantController } from "./tenant.controller.js";
 
-const router = express.Router();
+// const router = express.Router();
 
-router.post("/", createTenantController); 
+// router.post("/", createTenantController); 
 
 
-export default router;
+// export default router;

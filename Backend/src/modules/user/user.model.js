@@ -1,13 +1,15 @@
 import mongoose from "mongoose";
-import { ROLES } from "../../config/constants.js";
+
 const userSchema = new mongoose.Schema(
   {
     name: String,
+
     email: {
       type: String,
       required: true,
       unique: true,
     },
+
     password: {
       type: String,
       required: true,
@@ -15,15 +17,10 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: Object.values(ROLES),
-      default: ROLES.STUDENT,
+      enum: ["ADMIN", "TEACHER", "STUDENT", "PARENT"],
+      default: "STUDENT",
     },
 
-    tenantId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Tenant",
-      required: true,
-    },
     studentProfile: {
       rollNumber: String,
       class: String,
@@ -49,7 +46,7 @@ const userSchema = new mongoose.Schema(
       default: true,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 export default mongoose.model("User", userSchema);

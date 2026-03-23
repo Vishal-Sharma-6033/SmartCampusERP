@@ -3,37 +3,36 @@ import bcrypt from "bcryptjs";
 import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.js";
 import ApiError from "../../utils/ApiError.js";
 
-// REGISTER
-export const registerUser = async (data, tenantId) => {
+// ✅ REGISTER
+export const registerUser = async (data) => {
   const existingUser = await User.findOne({
-    email: data.email,
-    tenantId,
+    email: data.email.toLowerCase(),
   });
 
   if (existingUser) {
-    throw new ApiError(400, "User already exists in this tenant");
+    throw new ApiError(400, "User already exists");
   }
 
-  const hashed = await bcrypt.hash(data.password, 10);
+  const hashedPassword = await bcrypt.hash(data.password, 10);
 
   const user = await User.create({
-    ...data,
-    tenantId,
-    password: hashed,
+    name: data.name,
+    email: data.email.toLowerCase(),
+    password: hashedPassword,
+    role: data.role || "STUDENT",
   });
 
   return user;
 };
 
-// LOGIN
-export const loginUser = async (data, tenantId) => {
+// ✅ LOGIN
+export const loginUser = async (data) => {
   const user = await User.findOne({
-    email: data.email,
-    tenantId,
+    email: data.email.toLowerCase(),
   });
 
   if (!user) {
-    throw new ApiError(404, "User not found in this tenant");
+    throw new ApiError(404, "User not found");
   }
 
   const isMatch = await bcrypt.compare(data.password, user.password);
@@ -42,8 +41,9 @@ export const loginUser = async (data, tenantId) => {
     throw new ApiError(401, "Invalid credentials");
   }
 
-  const accessToken = generateAccessToken(user);
-  const refreshToken = generateRefreshToken(user);
-
-  return { user, accessToken, refreshToken };
+  return {
+    user,
+    accessToken: generateAccessToken(user),
+    refreshToken: generateRefreshToken(user),
+  };
 };
