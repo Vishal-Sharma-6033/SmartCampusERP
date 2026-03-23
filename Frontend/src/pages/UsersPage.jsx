@@ -176,7 +176,6 @@ const UsersPage = () => {
               <option value="TEACHER">TEACHER</option>
               <option value="PARENT">PARENT</option>
               <option value="ADMIN">ADMIN</option>
-              <option value="SUPER_ADMIN">SUPER_ADMIN</option>
             </select>
           </label>
 
@@ -209,7 +208,6 @@ const UsersPage = () => {
                         <option value="TEACHER">TEACHER</option>
                         <option value="PARENT">PARENT</option>
                         <option value="ADMIN">ADMIN</option>
-                        <option value="SUPER_ADMIN">SUPER_ADMIN</option>
                       </select>
                     ) : (
                       item.role

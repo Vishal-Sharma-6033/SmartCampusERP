@@ -9,10 +9,9 @@ import { getApiErrorMessage } from '../utils/error.js'
 
 const LoginPage = () => {
   const navigate = useNavigate()
-  const { login, setTenantId } = useAuth()
+  const { login } = useAuth()
 
   const [form, setForm] = useState({
-    tenantId: '',
     email: '',
     password: '',
   })
@@ -30,7 +29,6 @@ const LoginPage = () => {
     setSubmitting(true)
 
     try {
-      setTenantId(form.tenantId)
       await login(form)
       navigate('/')
     } catch (err) {
@@ -44,14 +42,6 @@ const LoginPage = () => {
     <div className="auth-page">
       <Card title="Welcome Back" subtitle="Sign in to your SmartCampus workspace">
         <form className="form-grid" onSubmit={onSubmit}>
-          <InputField
-            label="Tenant ID"
-            name="tenantId"
-            value={form.tenantId}
-            onChange={onChange}
-            required
-            placeholder="Mongo Tenant ObjectId"
-          />
           <InputField
             label="Email"
             name="email"

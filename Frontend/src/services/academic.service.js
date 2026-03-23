@@ -3,7 +3,7 @@ import { ENDPOINTS } from '../utils/constants.js'
 
 export const getSubjects = async (semester) => {
   const semesterNum = Number(semester)
-  const params = Number.isFinite(semesterNum) && semesterNum > 0 ? { semester: semesterNum } : { semester: 1 }
+  const params = Number.isFinite(semesterNum) && semesterNum > 0 ? { semester: semesterNum } : undefined
   const response = await api.get(ENDPOINTS.ACADEMIC.SUBJECTS, { params })
   return response.data
 }

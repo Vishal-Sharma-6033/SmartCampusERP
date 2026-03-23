@@ -3,14 +3,14 @@ import useAuth from '../hooks/useAuth.js'
 import Loader from './Loader.jsx'
 
 const ProtectedRoute = ({ children }) => {
-  const { token, loading, tenantId } = useAuth()
+  const { token, loading } = useAuth()
   const location = useLocation()
 
   if (loading) {
     return <Loader text="Restoring your workspace..." />
   }
 
-  if (!token || !tenantId) {
+  if (!token) {
     return <Navigate to="/login" replace state={{ from: location }} />
   }
 

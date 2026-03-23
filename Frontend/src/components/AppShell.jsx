@@ -3,7 +3,7 @@ import useAuth from '../hooks/useAuth.js'
 import { ROLES } from '../utils/constants.js'
 
 const AppShell = () => {
-  const { user, logout, tenantId, hasRole } = useAuth()
+  const { user, logout, hasRole } = useAuth()
 
   return (
     <div className="app-shell">
@@ -28,7 +28,6 @@ const AppShell = () => {
 
           <div className="topbar-actions">
             <input className="quick-search" type="search" placeholder="Search" aria-label="Search" />
-            <span className="tenant-pill">Tenant: {tenantId || 'Not set'}</span>
             <button className="btn btn-muted" type="button" onClick={logout}>
               Logout
             </button>

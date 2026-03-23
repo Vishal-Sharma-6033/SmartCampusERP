@@ -9,10 +9,9 @@ import { getApiErrorMessage } from '../utils/error.js'
 
 const RegisterPage = () => {
   const navigate = useNavigate()
-  const { register, setTenantId } = useAuth()
+  const { register } = useAuth()
 
   const [form, setForm] = useState({
-    tenantId: '',
     name: '',
     email: '',
     password: '',
@@ -34,7 +33,6 @@ const RegisterPage = () => {
     setSubmitting(true)
 
     try {
-      setTenantId(form.tenantId)
       await register({
         name: form.name,
         email: form.email,
@@ -52,16 +50,8 @@ const RegisterPage = () => {
 
   return (
     <div className="auth-page">
-      <Card title="Create Account" subtitle="Join your tenant workspace">
+      <Card title="Create Account" subtitle="Create your SmartCampus account">
         <form className="form-grid" onSubmit={onSubmit}>
-          <InputField
-            label="Tenant ID"
-            name="tenantId"
-            value={form.tenantId}
-            onChange={onChange}
-            required
-            placeholder="Mongo Tenant ObjectId"
-          />
           <InputField
             label="Full Name"
             name="name"
@@ -96,7 +86,6 @@ const RegisterPage = () => {
               <option value="TEACHER">TEACHER</option>
               <option value="PARENT">PARENT</option>
               <option value="ADMIN">ADMIN</option>
-              <option value="SUPER_ADMIN">SUPER_ADMIN</option>
             </select>
           </label>
 

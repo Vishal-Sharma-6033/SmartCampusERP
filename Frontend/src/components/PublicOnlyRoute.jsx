@@ -2,9 +2,9 @@ import { Navigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth.js'
 
 const PublicOnlyRoute = ({ children }) => {
-  const { token, tenantId } = useAuth()
+  const { token } = useAuth()
 
-  if (token && tenantId) {
+  if (token) {
     return <Navigate to="/" replace />
   }
 
