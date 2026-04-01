@@ -11,12 +11,12 @@ export const createSubjectService = async (data) => {
 
   const subject = await Subject.create({
     ...data,
-    students: data.students || [], // fallback
+    students: data.students || [], 
   });
 
   return subject;
 };
-// GET SUBJECTS (SEMESTER FILTER OPTIONAL)
+// GET SUBJECTS by semester
 export const getSubjectsService = async (semester) => {
   const filter = semester ? { semester: Number(semester) } : {};
 
@@ -73,7 +73,7 @@ export const addStudentToSubjectService = async (subjectId, studentId) => {
   const subject = await Subject.findByIdAndUpdate(
     subjectId,
     { $addToSet: { students: studentId } },
-    { new: true }
+    { new: true },
   );
 
   if (!subject) throw new ApiError(404, "Subject not found");
@@ -82,14 +82,11 @@ export const addStudentToSubjectService = async (subjectId, studentId) => {
 };
 
 // REMOVE STUDENT
-export const removeStudentFromSubjectService = async (
-  subjectId,
-  studentId
-) => {
+export const removeStudentFromSubjectService = async (subjectId, studentId) => {
   const subject = await Subject.findByIdAndUpdate(
     subjectId,
     { $pull: { students: studentId } },
-    { new: true }
+    { new: true },
   );
 
   if (!subject) throw new ApiError(404, "Subject not found");

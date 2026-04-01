@@ -9,7 +9,6 @@ import {
   addStudent,
   removeStudent,
 } from "./academic.controller.js";
-
 import authMiddleware from "../../middlewares/auth.middleware.js";
 import roleMiddleware from "../../middlewares/role.middleware.js";
 
@@ -21,15 +20,9 @@ router.use(authMiddleware);
 router.post("/subjects", roleMiddleware("ADMIN", "TEACHER"), createSubject);
 router.get("/subjects", getSubjects);
 router.get("/subjects/:id", getSubjectById);
-
-// DASHBOARD
 router.get("/dashboard/:studentId", getStudentDashboard);
-
-// UPDATE / DELETE
 router.put("/subjects/:id", roleMiddleware("ADMIN", "TEACHER"), updateSubject);
 router.delete("/subjects/:id", roleMiddleware("ADMIN"), deleteSubject);
-
-// STUDENT MANAGEMENT
 router.post("/subjects/:id/add-student", roleMiddleware("ADMIN", "TEACHER"), addStudent);
 router.post("/subjects/:id/remove-student", roleMiddleware("ADMIN", "TEACHER"), removeStudent);
 

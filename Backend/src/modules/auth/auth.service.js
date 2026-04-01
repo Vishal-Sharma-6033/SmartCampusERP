@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.js";
 import ApiError from "../../utils/ApiError.js";
 
-// ✅ REGISTER
+// REGISTER
 export const registerUser = async (data) => {
   const existingUser = await User.findOne({
     email: data.email.toLowerCase(),
@@ -25,7 +25,7 @@ export const registerUser = async (data) => {
   return user;
 };
 
-// ✅ LOGIN
+//  LOGIN
 export const loginUser = async (data) => {
   const user = await User.findOne({
     email: data.email.toLowerCase(),

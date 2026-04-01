@@ -1,7 +1,8 @@
-
 import asyncHandlers from "../../utils/asyncHandler.js";
 import * as AuthService from "./auth.service.js";
 import ApiResponse from "../../utils/ApiResponse.js";
+
+// REGISTER
 export const register = asyncHandlers(async (req, res) => {
   const user = await AuthService.registerUser(req.body);
 
@@ -10,6 +11,7 @@ export const register = asyncHandlers(async (req, res) => {
   );
 });
 
+// LOGIN
 export const login = asyncHandlers(async (req, res) => {
   const data = await AuthService.loginUser(req.body);
 

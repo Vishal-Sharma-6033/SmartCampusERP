@@ -5,6 +5,11 @@ import allowRoles from "../middlewares/role.middleware.js";
 import { ROLES } from "../config/constants.js";
 import userRoutes from "../modules/user/user.route.js";
 import academicRoutes from "../modules/academic/academic.routes.js";
+import contentRoutes from '../modules/content/content.routes.js'
+import assignmentRoutes from '../modules/assignment/assignment.routes.js'
+import notificationRoutes from '../modules/notifications/notification.routes.js'
+import noticeRoutes from '../modules/notice/notice.routes.js'
+import examRoutes from '../modules/exam/exam.routes.js'
 const router = express.Router();
 
 // router.get(
@@ -19,14 +24,9 @@ router.get("/admin", authMiddleware, allowRoles(ROLES.ADMIN), (req, res) => {
   res.json({ message: "Welcome Admin " });
 });
 
-router.get(
-  "/faculty",
-  authMiddleware,
-  allowRoles(ROLES.ADMIN, ROLES.TEACHER),
-  (req, res) => {
+router.get("/faculty", authMiddleware, allowRoles(ROLES.ADMIN, ROLES.TEACHER),(req, res) => {
     res.json({ message: "Faculty Access " });
-  },
-);
+});
 
 // ONLY FOR TEST
 router.get("/test", (req, res) => {
@@ -40,5 +40,13 @@ router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
 // router.use("/tenant", tenantRoutes);
 router.use("/academic", academicRoutes);
+router.use("/content", contentRoutes)
+router.use("/assignments", assignmentRoutes)
 
+router.use("/notifications", notificationRoutes);
+
+router.use("/notices", noticeRoutes);
+
+
+router.use("/exams", examRoutes);
 export default router;

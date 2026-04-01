@@ -2,7 +2,7 @@ import * as UserService from "./user.service.js";
 import asyncHandler from "../../utils/asyncHandler.js";
 import ApiResponse from "../../utils/ApiResponse.js";
 
-// ✅ CREATE USER (Admin use)
+// CREATE USER (Admin use)
 export const createUser = asyncHandler(async (req, res) => {
   const user = await UserService.createUser(req.body);
 
@@ -11,7 +11,7 @@ export const createUser = asyncHandler(async (req, res) => {
   );
 });
 
-// ✅ GET MY PROFILE
+// GET MY PROFILE
 export const getMyProfile = asyncHandler(async (req, res) => {
   const user = await UserService.getUserById(req.user.id);
 
@@ -20,7 +20,7 @@ export const getMyProfile = asyncHandler(async (req, res) => {
   );
 });
 
-// ✅ UPDATE USER
+//  UPDATE USER
 export const updateUser = asyncHandler(async (req, res) => {
   const user = await UserService.updateUser(
     req.params.id,
@@ -32,7 +32,7 @@ export const updateUser = asyncHandler(async (req, res) => {
   );
 });
 
-// ✅ DELETE USER (Soft delete)
+//  DELETE USER (Soft delete)
 export const deleteUser = asyncHandler(async (req, res) => {
   await UserService.deleteUser(req.params.id);
 
@@ -41,7 +41,7 @@ export const deleteUser = asyncHandler(async (req, res) => {
   );
 });
 
-// ✅ GET ALL USERS (with search + pagination)
+//  GET ALL USERS (with search + pagination)
 export const getAllUsers = asyncHandler(async (req, res) => {
   const result = await UserService.getAllUsers(req.query);
 
@@ -50,7 +50,7 @@ export const getAllUsers = asyncHandler(async (req, res) => {
   );
 });
 
-// ✅ LINK PARENT TO STUDENT
+// LINK PARENT TO STUDENT
 export const linkParentToStudent = asyncHandler(async (req, res) => {
   const { parentId, studentId } = req.body;
 
@@ -63,3 +63,13 @@ export const linkParentToStudent = asyncHandler(async (req, res) => {
     new ApiResponse(200, result, "Parent linked to student")
   );
 });
+
+// get bookmarks
+export const getMyBookmarks = asyncHandler(async(req,res)=>{
+  const user = await UserService.getBookmarks(req.user._id)
+
+  res.json({
+    success: true,
+    bookmarks: user.bookmarks
+  })
+})

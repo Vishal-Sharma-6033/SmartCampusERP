@@ -3,25 +3,20 @@ import bcrypt from "bcryptjs";
 import ApiError from "../../utils/ApiError.js";
 import { ROLES } from "../../config/constants.js";
 
-// ✅ CREATE USER
+// CREATE USER
 export const createUser = async (data) => {
   const existingUser = await User.findOne({
     email: data.email,
   });
-
   if (existingUser) {
     throw new ApiError(400, "User already exists");
   }
-
-  // ❌ Prevent SUPER_ADMIN creation
   if (data.role === ROLES.SUPER_ADMIN) {
     throw new ApiError(403, "Cannot assign SUPER_ADMIN role");
   }
 
-  // 🔐 hash password
   const hashedPassword = await bcrypt.hash(data.password, 10);
 
-  // 🎯 default role
   if (!data.role) {
     data.role = ROLES.STUDENT;
   }
@@ -37,7 +32,7 @@ export const createUser = async (data) => {
   return userObj;
 };
 
-// ✅ GET USER BY ID
+// GET USER BY ID
 export const getUserById = async (id) => {
   const user = await User.findById(id).select("-password");
 
@@ -48,20 +43,16 @@ export const getUserById = async (id) => {
   return user;
 };
 
-// ✅ UPDATE USER
+//  UPDATE USER
 export const updateUser = async (userId, data) => {
   const user = await User.findById(userId);
 
   if (!user) {
     throw new ApiError(404, "User not found");
   }
-
-  // ❌ prevent SUPER_ADMIN modification
   if (user.role === ROLES.SUPER_ADMIN) {
     throw new ApiError(403, "Cannot modify SUPER_ADMIN");
   }
-
-  // 🔐 validate role
   if (data.role && !Object.values(ROLES).includes(data.role)) {
     throw new ApiError(400, "Invalid role");
   }
@@ -75,7 +66,7 @@ export const updateUser = async (userId, data) => {
   return userObj;
 };
 
-// ✅ DELETE USER (soft delete)
+// DELETE USER 
 export const deleteUser = async (userId) => {
   const user = await User.findById(userId);
 
@@ -89,23 +80,19 @@ export const deleteUser = async (userId) => {
   return true;
 };
 
-// ✅ GET ALL USERS (pagination + search + filter)
+//  GET ALL USERS (pagination + search + filter)
 export const getAllUsers = async (query) => {
   const { page = 1, limit = 10, search = "", role } = query;
 
   const filter = {
     isActive: true,
   };
-
-  // 🔍 search
   if (search) {
     filter.$or = [
       { name: { $regex: search, $options: "i" } },
       { email: { $regex: search, $options: "i" } },
     ];
   }
-
-  // 🎯 role filter
   if (role) {
     filter.role = role;
   }
@@ -126,7 +113,7 @@ export const getAllUsers = async (query) => {
   };
 };
 
-// ✅ LINK PARENT TO STUDENT
+//  LINK PARENT TO STUDENT
 export const linkParentToStudent = async (parentId, studentId) => {
   const parent = await User.findById(parentId);
   const student = await User.findById(studentId);
@@ -134,17 +121,12 @@ export const linkParentToStudent = async (parentId, studentId) => {
   if (!parent || !student) {
     throw new ApiError(404, "User not found");
   }
-
-  // ✅ role validation
   if (parent.role !== ROLES.PARENT) {
     throw new ApiError(400, "User is not a parent");
   }
-
   if (student.role !== ROLES.STUDENT) {
     throw new ApiError(400, "User is not a student");
   }
-
-  // 🔥 prevent duplicate
   if (parent.parentProfile.children.includes(studentId)) {
     throw new ApiError(400, "Already linked");
   }
@@ -154,3 +136,10 @@ export const linkParentToStudent = async (parentId, studentId) => {
 
   return parent;
 };
+
+// get bookmarks
+export const getBookmarks = async(userId)=>{
+  return await User.findById(userId)
+  .select("bookmarks")
+  .populate("bookmarks")
+}
