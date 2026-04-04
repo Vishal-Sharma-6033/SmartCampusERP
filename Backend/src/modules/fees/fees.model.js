@@ -44,7 +44,19 @@ const feeSchema = new mongoose.Schema(
     dueDate: {
       type: Date,
     },
+    installments: [
+      {
+        amount: Number,
+        dueDate: Date,
+        status: {
+          type: String,
+          enum: ["PENDING", "PAID"],
+          default: "PENDING",
+        },
+      },
+    ],
   },
+
   { timestamps: true },
 );
 

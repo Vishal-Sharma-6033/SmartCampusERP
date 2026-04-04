@@ -163,7 +163,6 @@ export const generateReceipt = async (feeId) => {
 
 export const applyLateFee = async (studentId) => {
   const fee = await Fee.findOne({ studentId });
-
   const today = new Date();
 
   if (fee.dueDate && today > fee.dueDate && fee.dueAmount > 0) {
@@ -178,8 +177,75 @@ export const applyLateFee = async (studentId) => {
 
     await fee.save();
   }
+return fee;
+};
+
+
+
+
+// export const payInstallment = async (studentId, installmentIndex) => {
+//   const fee = await Fee.findOne({ studentId });
+
+//   if (!fee) throw new Error("Fee record not found");
+
+//   const inst = fee.installments[installmentIndex];
+
+//   if (!inst || inst.status === "PAID") {
+//     throw new Error("Invalid installment");
+//   }
+
+//   inst.status = "PAID";
+
+//   fee.paidAmount += inst.amount;
+//   fee.dueAmount -= inst.amount;
+
+//   await fee.save();
+
+//   return fee;
+// };
+
+export const payInstallment = async (studentId, installmentIndex) => {
+  const fee = await Fee.findOne({ studentId });
+
+  if (!fee) throw new Error("Fee record not found");
+
+  if (!fee.installments || fee.installments.length === 0) {
+    throw new Error("No installments found");
+  }
+
+  if (installmentIndex < 0 || installmentIndex >= fee.installments.length) {
+    throw new Error("Invalid installment index");
+  }
+
+  const inst = fee.installments[installmentIndex];
+
+  if (inst.status === "PAID") {
+    throw new Error("Installment already paid");
+  }
+
+  // 💰 Update
+  inst.status = "PAID";
+
+  fee.paidAmount += inst.amount;
+  fee.dueAmount = fee.totalAmount - fee.paidAmount;
+
+  // 🔥 Status update
+  if (fee.dueAmount <= 0) fee.status = "PAID";
+  else fee.status = "PARTIAL";
+
+  await fee.save();
 
   return fee;
 };
 
+export const createInstallments = async (studentId, installments) => {
+  const fee = await Fee.findOne({ studentId });
 
+  if (!fee) throw new Error("Fee record not found");
+
+  fee.installments = installments;
+
+  await fee.save();
+
+  return fee;
+};
