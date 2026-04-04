@@ -180,30 +180,6 @@ export const applyLateFee = async (studentId) => {
 return fee;
 };
 
-
-
-
-// export const payInstallment = async (studentId, installmentIndex) => {
-//   const fee = await Fee.findOne({ studentId });
-
-//   if (!fee) throw new Error("Fee record not found");
-
-//   const inst = fee.installments[installmentIndex];
-
-//   if (!inst || inst.status === "PAID") {
-//     throw new Error("Invalid installment");
-//   }
-
-//   inst.status = "PAID";
-
-//   fee.paidAmount += inst.amount;
-//   fee.dueAmount -= inst.amount;
-
-//   await fee.save();
-
-//   return fee;
-// };
-
 export const payInstallment = async (studentId, installmentIndex) => {
   const fee = await Fee.findOne({ studentId });
 
@@ -223,13 +199,11 @@ export const payInstallment = async (studentId, installmentIndex) => {
     throw new Error("Installment already paid");
   }
 
-  // 💰 Update
   inst.status = "PAID";
 
   fee.paidAmount += inst.amount;
   fee.dueAmount = fee.totalAmount - fee.paidAmount;
 
-  // 🔥 Status update
   if (fee.dueAmount <= 0) fee.status = "PAID";
   else fee.status = "PARTIAL";
 
@@ -248,4 +222,30 @@ export const createInstallments = async (studentId, installments) => {
   await fee.save();
 
   return fee;
+};
+
+export const getFeeAnalytics = async () => {
+  const totalCollection = await Fee.aggregate([
+    {
+      $group: {
+        _id: null,
+        totalPaid: { $sum: "$paidAmount" },
+        totalDue: { $sum: "$dueAmount" },
+      },
+    },
+  ]);
+
+  const statusStats = await Fee.aggregate([
+    {
+      $group: {
+        _id: "$status",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  return {
+    totalCollection: totalCollection[0],
+    statusStats,
+  };
 };

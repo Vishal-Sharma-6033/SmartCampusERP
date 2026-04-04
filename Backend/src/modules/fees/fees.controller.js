@@ -53,8 +53,6 @@ export const applyLateFee = async (req, res) => {
   res.json(data);
 };
 
-
-
 export const payInstallment = async (req, res) => {
   const { studentId, installmentIndex } = req.body;
 
@@ -62,10 +60,16 @@ export const payInstallment = async (req, res) => {
 
   res.json(data);
 };
+
 export const createInstallments = async (req, res) => {
   const { studentId, installments } = req.body;
 
   const data = await feeService.createInstallments(studentId, installments);
 
+  res.json(data);
+};
+
+export const getAnalytics = async (req, res) => {
+  const data = await feeService.getFeeAnalytics();
   res.json(data);
 };

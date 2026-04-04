@@ -14,4 +14,6 @@ router.get("/:studentId", auth,  role("ADMIN", "STUDENT"),  feeController.getFee
 router.post("/late-fee/:studentId", auth, role("ADMIN", "STUDENT"), feeController.applyLateFee);
 router.post("/installment", auth, role("ADMIN", "STUDENT"), feeController.createInstallments);
 router.post("/installment/pay", auth, role("ADMIN", "STUDENT"), feeController.payInstallment);
+router.get("/analytics", auth, role("ADMIN"), feeController.getAnalytics);
+
 export default router;
