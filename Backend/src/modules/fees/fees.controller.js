@@ -17,7 +17,6 @@ export const createFee = async (req, res) => {
   }
 };
 
-
 export const getFees = async (req, res) => {
   const data = await feeService.getFeeByStudent(req.params.studentId);
   res.json(data);
@@ -39,4 +38,17 @@ export const verifyPayment = async (req, res) => {
 export const getReceipt = async (req, res) => {
   const file = await feeService.generateReceipt(req.params.id);
   res.download(file);
+};
+// export const getReceipt = async (req, res) => {
+//   const data = await feeService.generateReceipt(req.params.id);
+
+//   res.json({
+//     success: true,
+//     receiptUrl: data.url,
+//   });
+// };
+
+export const applyLateFee = async (req, res) => {
+  const data = await feeService.applyLateFee(req.params.studentId);
+  res.json(data);
 };

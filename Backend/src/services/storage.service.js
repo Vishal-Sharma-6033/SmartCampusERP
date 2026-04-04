@@ -24,6 +24,27 @@ cloudinary.config({
   };
 };
 
+
+// export const uploadBuffer = (buffer) => {
+
+//   return new Promise((resolve, reject) => {
+//     const stream = cloudinary.uploader.upload_stream(
+//       {
+//         folder: "receipts",
+//         resource_type: "raw", 
+//       },
+//       (error, result) => {
+//         if (result) resolve(result);
+//         else reject(error);
+//       }
+//     );
+
+//     streamifier.createReadStream(buffer).pipe(stream);
+//   });
+// };
+
+
+
 // delete file
  export const deletes = async (publicId) => {
   return await cloudinary.uploader.destroy(publicId);
@@ -33,6 +54,7 @@ cloudinary.config({
 const storageService = {
   upload,
   deletes,
+  // uploadBuffer,
   
   }
 

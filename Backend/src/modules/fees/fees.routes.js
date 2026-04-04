@@ -5,10 +5,12 @@ import role from "../../middlewares/role.middleware.js";
 
 const router = express.Router();
 
-// router.get("/:studentId", auth,  role("ADMIN", "STUDENT"),  feeController.getFees);
+
 router.post("/create",auth, role("ADMIN"), feeController.createFee);
 router.post("/pay", auth,  role("ADMIN", "STUDENT"),  feeController.payFees);
 router.post("/verify", auth,  role("ADMIN", "STUDENT"),  feeController.verifyPayment);
 router.get("/receipt/:id", auth,  role("ADMIN", "STUDENT"),  feeController.getReceipt);
 router.get("/:studentId", auth,  role("ADMIN", "STUDENT"),  feeController.getFees);
+router.post("/late-fee/:studentId", auth, role("ADMIN", "STUDENT"), feeController.applyLateFee);
+
 export default router;

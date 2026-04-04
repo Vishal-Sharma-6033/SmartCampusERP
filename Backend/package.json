@@ -23,7 +23,8 @@
     "morgan": "^1.10.1",
     "multer": "^2.1.1",
     "node-cron": "^4.2.1",
-    "pdfkit": "^0.18.0"
+    "pdfkit": "^0.18.0",
+    "streamifier": "^0.1.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

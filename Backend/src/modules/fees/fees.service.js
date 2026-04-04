@@ -5,6 +5,7 @@ import path from 'path';
 import PDFDocument from 'pdfkit';
 import {v4 as uuid} from 'uuid';
 
+
 export const createFee = async (data) => {
   const existing = await Fee.findOne({ studentId: data.studentId });
 
@@ -22,7 +23,6 @@ export const createFee = async (data) => {
 
   return fee;
 };
-
 
 export const getFeeByStudent = async(studentId)=>{
     return await Fee.findOne({studentId})
@@ -100,7 +100,6 @@ export const generateReceipt = async (feeId) => {
 
     doc.end();
 
-    // ✅ WAIT HERE
     stream.on("finish", () => {
       resolve(filePath);
     });
@@ -110,3 +109,77 @@ export const generateReceipt = async (feeId) => {
     });
   });
 };
+
+
+// export const generateReceipt = async (feeId) => { 
+
+
+
+//   const fee = await Fee.findById(feeId);
+
+//   const doc = new PDFDocument();
+//   const buffers = [];
+
+//   doc.on("data", (chunk) => buffers.push(chunk));
+
+//   return new Promise((resolve, reject) => {
+//     doc.on("end", async () => {
+//       const pdfBuffer = Buffer.concat(buffers);
+
+//       try {
+//         const result = await storageService.uploadBuffer(pdfBuffer);
+
+//         resolve({
+//           url: result.secure_url,
+//           public_id: result.public_id,
+//         });
+//       } catch (err) {
+//         reject(err);
+//       }
+//     });
+
+//     // 📄 PDF CONTENT
+//     doc.fontSize(20).text("Fee Receipt", { align: "center" });
+//     doc.moveDown();
+
+//     doc.text(`Student ID: ${fee.studentId}`);
+//     doc.text(`Total Amount: ${fee.totalAmount}`);
+//     doc.text(`Paid Amount: ${fee.paidAmount}`);
+//     doc.text(`Due Amount: ${fee.dueAmount}`);
+//     doc.text(`Status: ${fee.status}`);
+
+//     doc.moveDown();
+//     doc.text("Payments:");
+
+//     fee.payments.forEach((p) => {
+//       doc.text(`- ${p.amount} | ${p.paymentId}`);
+//     });
+
+//     doc.end();
+//   });
+// };
+
+
+
+export const applyLateFee = async (studentId) => {
+  const fee = await Fee.findOne({ studentId });
+
+  const today = new Date();
+
+  if (fee.dueDate && today > fee.dueDate && fee.dueAmount > 0) {
+    const daysLate = Math.ceil(
+      (today - fee.dueDate) / (1000 * 60 * 60 * 24)
+    );
+
+    const penalty = daysLate * 50; 
+
+    fee.lateFee = penalty;
+    fee.dueAmount = fee.totalAmount - fee.paidAmount + penalty;
+
+    await fee.save();
+  }
+
+  return fee;
+};
+
+
