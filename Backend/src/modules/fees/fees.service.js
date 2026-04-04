@@ -43,3 +43,34 @@ export const verifyAndUpdatePayment = async (data) => {
 
   return fee;
 };
+
+export const generateReceipt = async (feeId) => {
+  const fee = await Fee.findById(feeId);
+
+  const fileName = `receipt-${uuid()}.pdf`;
+  const filePath = path.join("uploads", fileName);
+
+  const doc = new PDFDocument();
+
+  doc.pipe(fs.createWriteStream(filePath));
+
+  doc.fontSize(20).text("Fee Receipt", { align: "center" });
+  doc.moveDown();
+
+  doc.text(`Student ID: ${fee.studentId}`);
+  doc.text(`Total Amount: ${fee.totalAmount}`);
+  doc.text(`Paid Amount: ${fee.paidAmount}`);
+  doc.text(`Due Amount: ${fee.dueAmount}`);
+  doc.text(`Status: ${fee.status}`);
+
+  doc.moveDown();
+  doc.text("Payments:");
+
+  fee.payments.forEach((p) => {
+    doc.text(`- ${p.amount} | ${p.paymentId}`);
+  });
+
+  doc.end();
+
+  return filePath;
+};
