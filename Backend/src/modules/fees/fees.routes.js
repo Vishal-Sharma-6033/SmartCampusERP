@@ -1,0 +1,14 @@
+import express from 'express';
+import * as feeController from "./fees.controller.js";
+import auth from "../../middlewares/auth.middleware.js";
+import role from "../../middlewares/role.middleware.js";
+
+const router = express.Router();
+
+// router.get("/:studentId", auth,  role("ADMIN", "STUDENT"),  feeController.getFees);
+router.post("/create",auth, role("ADMIN"), feeController.createFee);
+router.post("/pay", auth,  role("ADMIN", "STUDENT"),  feeController.payFees);
+router.post("/verify", auth,  role("ADMIN", "STUDENT"),  feeController.verifyPayment);
+router.get("/receipt/:id", auth,  role("ADMIN", "STUDENT"),  feeController.getReceipt);
+router.get("/:studentId", auth,  role("ADMIN", "STUDENT"),  feeController.getFees);
+export default router;

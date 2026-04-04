@@ -3,7 +3,26 @@ import { createOrder } from '../../services/payment.service.js';
 import fs from 'fs';
 import path from 'path';
 import PDFDocument from 'pdfkit';
-import { v4 as uuidv4} from 'uuid';
+import {v4 as uuid} from 'uuid';
+
+export const createFee = async (data) => {
+  const existing = await Fee.findOne({ studentId: data.studentId });
+
+  if (existing) {
+    throw new Error("Fee already exists for this student");
+  }
+
+  const fee = await Fee.create({
+    studentId: data.studentId,
+    totalAmount: data.totalAmount,
+    paidAmount: 0,
+    dueAmount: data.totalAmount,
+    status: "PENDING",
+  });
+
+  return fee;
+};
+
 
 export const getFeeByStudent = async(studentId)=>{
     return await Fee.findOne({studentId})
@@ -48,29 +67,46 @@ export const generateReceipt = async (feeId) => {
   const fee = await Fee.findById(feeId);
 
   const fileName = `receipt-${uuid()}.pdf`;
-  const filePath = path.join("uploads", fileName);
+  const dir = path.join(process.cwd(), "uploads");
+
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  }
+
+  const filePath = path.join(dir, fileName);
 
   const doc = new PDFDocument();
 
-  doc.pipe(fs.createWriteStream(filePath));
+  return new Promise((resolve, reject) => {
+    const stream = fs.createWriteStream(filePath);
 
-  doc.fontSize(20).text("Fee Receipt", { align: "center" });
-  doc.moveDown();
+    doc.pipe(stream);
 
-  doc.text(`Student ID: ${fee.studentId}`);
-  doc.text(`Total Amount: ${fee.totalAmount}`);
-  doc.text(`Paid Amount: ${fee.paidAmount}`);
-  doc.text(`Due Amount: ${fee.dueAmount}`);
-  doc.text(`Status: ${fee.status}`);
+    doc.fontSize(20).text("Fee Receipt", { align: "center" });
+    doc.moveDown();
 
-  doc.moveDown();
-  doc.text("Payments:");
+    doc.text(`Student ID: ${fee.studentId}`);
+    doc.text(`Total Amount: ${fee.totalAmount}`);
+    doc.text(`Paid Amount: ${fee.paidAmount}`);
+    doc.text(`Due Amount: ${fee.dueAmount}`);
+    doc.text(`Status: ${fee.status}`);
 
-  fee.payments.forEach((p) => {
-    doc.text(`- ${p.amount} | ${p.paymentId}`);
+    doc.moveDown();
+    doc.text("Payments:");
+
+    fee.payments.forEach((p) => {
+      doc.text(`- ${p.amount} | ${p.paymentId}`);
+    });
+
+    doc.end();
+
+    // ✅ WAIT HERE
+    stream.on("finish", () => {
+      resolve(filePath);
+    });
+
+    stream.on("error", (err) => {
+      reject(err);
+    });
   });
-
-  doc.end();
-
-  return filePath;
 };
