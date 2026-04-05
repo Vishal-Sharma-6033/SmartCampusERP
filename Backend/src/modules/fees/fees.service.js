@@ -249,3 +249,27 @@ export const getFeeAnalytics = async () => {
     statusStats,
   };
 };
+
+export const applyScholarship = async (studentId, scholarship) => {
+  const fee = await Fee.findOne({ studentId });
+
+  if (!fee) throw new Error("Fee not found");
+
+  let discount = 0;
+
+  if (scholarship.type === "PERCENTAGE") {
+    discount = (fee.totalAmount * scholarship.value) / 100;
+  } else {
+    discount = scholarship.value;
+  }
+
+  fee.scholarship = scholarship;
+  fee.discountAmount = discount;
+  fee.finalAmount = fee.totalAmount - discount;
+
+  fee.dueAmount = fee.finalAmount - fee.paidAmount;
+
+  await fee.save();
+
+  return fee;
+};

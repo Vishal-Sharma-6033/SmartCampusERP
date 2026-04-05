@@ -55,6 +55,22 @@ const feeSchema = new mongoose.Schema(
         },
       },
     ],
+    scholarship: {
+      type: {
+        type: String,
+        enum: ["PERCENTAGE", "FIXED"],
+      },
+      value: Number,
+    },
+
+    discountAmount: {
+      type: Number,
+      default: 0,
+    },
+
+    finalAmount: {
+      type: Number,
+    },
   },
 
   { timestamps: true },

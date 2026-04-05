@@ -73,3 +73,14 @@ export const getAnalytics = async (req, res) => {
   const data = await feeService.getFeeAnalytics();
   res.json(data);
 };
+
+export const applyScholarship = async (req, res) => {
+  const { studentId, type, value } = req.body;
+
+  const data = await feeService.applyScholarship(studentId, {
+    type,
+    value,
+  });
+
+  res.json(data);
+};
