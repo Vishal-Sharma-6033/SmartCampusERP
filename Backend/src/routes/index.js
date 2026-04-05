@@ -12,6 +12,7 @@ import noticeRoutes from '../modules/notice/notice.routes.js'
 import examRoutes from '../modules/exam/exam.routes.js'
 import timetableRoutes from '../modules/timetable/timetable.routes.js'
 import feeRoutes from "../modules/fees/fees.routes.js"
+import libraryRoutes from "../modules/library/library.routes.js";
 const router = express.Router();
 
 // router.get(
@@ -53,4 +54,5 @@ router.use("/notices", noticeRoutes);
 router.use("/exams", examRoutes);
 router.use("/timetable", timetableRoutes);
 router.use("/fees", feeRoutes)
+router.use("/library", libraryRoutes);
 export default router;
