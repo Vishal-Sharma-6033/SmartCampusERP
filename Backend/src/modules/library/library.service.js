@@ -3,7 +3,7 @@ import Issue from "./issue.model.js";
 import ApiError from "../../utils/ApiError.js";
 
 
-// 📚 Get All Books
+//  Get All Books
 export const getBooks = async (query) => {
   const search = query.search || "";
 
@@ -14,14 +14,14 @@ export const getBooks = async (query) => {
 };
 
 
-// ➕ Add Book
+//  Add Book
 export const addBook = async (data) => {
   data.availableCopies = data.totalCopies;
   return await Book.create(data);
 };
 
 
-// 📕 Issue Book
+//  Issue Book
 export const issueBook = async (studentId, bookId) => {
   const book = await Book.findById(bookId);
 
@@ -33,7 +33,7 @@ export const issueBook = async (studentId, bookId) => {
     throw new ApiError(400, "No copies available");
   }
 
-  // ❌ Prevent duplicate issue
+  //  Prevent duplicate issue
   const alreadyIssued = await Issue.findOne({
     studentId,
     bookId,
@@ -62,7 +62,7 @@ export const issueBook = async (studentId, bookId) => {
 };
 
 
-// 📗 Return Book
+//  Return Book
 export const returnBook = async (studentId, bookId) => {
   const issue = await Issue.findOne({
     studentId,
@@ -96,6 +96,28 @@ export const returnBook = async (studentId, bookId) => {
   book.availableCopies += 1;
 
   await book.save();
+
+  return issue;
+};
+
+//pay fine
+export const payFine = async (issueId) => {
+  const issue = await Issue.findById(issueId);
+
+  if (!issue || issue.fine <= 0) {
+    throw new ApiError(400, "No fine");
+  }
+
+  return await createOrder(issue.fine);
+};
+
+
+//  VERIFY PAYMENT
+export const verifyFine = async (issueId) => {
+  const issue = await Issue.findById(issueId);
+
+  issue.paymentStatus = "PAID";
+  await issue.save();
 
   return issue;
 };

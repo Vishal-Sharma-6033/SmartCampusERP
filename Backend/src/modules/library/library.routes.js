@@ -9,5 +9,6 @@ router.post("/books",auth,role("ADMIN","TEACHER"), controller.addBook);
 
 router.post("/issue", controller.issueBook);
 router.post("/return", controller.returnBook);
-
+router.post("/pay-fine", auth, role("ADMIN","STUDENT"), controller.payFine);
+router.post("/verify-fine", auth, role("ADMIN"), controller.verifyFine);
 export default router;

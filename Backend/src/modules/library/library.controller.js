@@ -35,3 +35,18 @@ export const returnBook = asyncHandler(async (req, res) => {
 
   res.json(new ApiResponse(200, result));
 });
+
+//  PAY FINE
+export const payFine = asyncHandler(async (req, res) => {
+  const { issueId } = req.body;
+  const data = await service.payFine(issueId);
+  res.json(new ApiResponse(200, data));
+});
+
+
+// VERIFY
+export const verifyFine = asyncHandler(async (req, res) => {
+  const { issueId } = req.body;
+  const data = await service.verifyFine(issueId);
+  res.json(new ApiResponse(200, data));
+});
