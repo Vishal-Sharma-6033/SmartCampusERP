@@ -3,7 +3,7 @@ import asyncHandler from "../../utils/asyncHandler.js";
 import ApiResponse from "../../utils/ApiResponse.js";
 
 export const getMyNotifications = asyncHandler(async (req, res) => {
-  const data = await Notification.find({ userId: req.user.id })
+  const data = await Notification.find({ userId: req.user._id })
     .sort({ createdAt: -1 });
 
   res.json(new ApiResponse(200, data));
