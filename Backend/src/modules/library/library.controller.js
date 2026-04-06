@@ -32,14 +32,14 @@ export const returnBook = asyncHandler(async (req, res) => {
   const { studentId, bookId } = req.body;
 
   const result = await libraryService.returnBook(studentId, bookId);
-
+  
   res.json(new ApiResponse(200, result));
 });
 
 //  PAY FINE
 export const payFine = asyncHandler(async (req, res) => {
   const { issueId } = req.body;
-  const data = await service.payFine(issueId);
+  const data = await libraryService.payFine(issueId);
   res.json(new ApiResponse(200, data));
 });
 
@@ -47,6 +47,6 @@ export const payFine = asyncHandler(async (req, res) => {
 // VERIFY
 export const verifyFine = asyncHandler(async (req, res) => {
   const { issueId } = req.body;
-  const data = await service.verifyFine(issueId);
+  const data = await libraryService.verifyFine(issueId);
   res.json(new ApiResponse(200, data));
 });
