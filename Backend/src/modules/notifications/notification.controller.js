@@ -1,13 +1,8 @@
-
-
 import * as service from "./notification.service.js";
 import asyncHandler from "../../utils/asyncHandler.js";
 import ApiResponse from "../../utils/ApiResponse.js";
 
 
-/**
- * GET /api/notifications
- */
 export const getMyNotifications = asyncHandler(async (req, res) => {
 
   const data = await service.getNotifications(req.user._id, req.query);
@@ -19,10 +14,6 @@ export const getMyNotifications = asyncHandler(async (req, res) => {
   }));
 });
 
-
-/**
- * PATCH /api/notifications/:id/read
- */
 export const markAsRead = asyncHandler(async (req, res) => {
 
   const notif = await service.markOneAsRead(req.params.id);
@@ -30,12 +21,6 @@ export const markAsRead = asyncHandler(async (req, res) => {
   res.json(new ApiResponse(200, notif));
 });
 
-
-
-
-/**
- * POST /api/notifications (🔥 CREATE)
- */
 export const createNotification = asyncHandler(async (req, res) => {
 
   const { userId, userIds, title, message, type } = req.body;

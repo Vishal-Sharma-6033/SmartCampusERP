@@ -1,41 +1,31 @@
 import Notification from "./notification.model.js";
 
-/**
- * 🔥 Create Notification (Reusable)
- */
 export const createNotification = async ({
   userId,
   userIds,
   title,
   message,
-  type = "general"
+  type = "general",
 }) => {
-
-  // BULK
+  
   if (userIds && userIds.length > 0) {
-    const data = userIds.map(id => ({
+    const data = userIds.map((id) => ({
       userId: id,
       title,
       message,
-      type
+      type,
     }));
 
     return await Notification.insertMany(data);
   }
-
-  // SINGLE
   return await Notification.create({
     userId,
     title,
     message,
-    type
+    type,
   });
 };
 
-
-/**
- * 📥 Get Notifications (Pagination)
- */
 export const getNotifications = async (userId, query) => {
   const page = parseInt(query.page) || 1;
   const limit = parseInt(query.limit) || 10;
@@ -51,22 +41,14 @@ export const getNotifications = async (userId, query) => {
     notifications,
     total,
     page,
-    pages: Math.ceil(total / limit)
+    pages: Math.ceil(total / limit),
   };
 };
 
-
-
-
-
-/**
- * ✅ Mark Single
- */
 export const markOneAsRead = async (id) => {
   return await Notification.findByIdAndUpdate(
     id,
     { isRead: true },
-    { new: true }
+    { new: true },
   );
 };
-

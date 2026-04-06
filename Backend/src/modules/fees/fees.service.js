@@ -35,11 +35,11 @@ export const payFees = async (studentId, amount) => {
   }
   const order = await createOrder(amount);
   await createNotification({
-  userId: studentId,
-  title: "Receipt Generated",
-  message: "Your payment receipt is ready for download",
-  type: "FEES"
-});
+    userId: studentId,
+    title: "Receipt Generated",
+    message: "Your payment receipt is ready for download",
+    type: "FEES",
+  });
   return {
     order,
     fee,
@@ -221,11 +221,11 @@ export const payInstallment = async (studentId, installmentIndex) => {
 
   await fee.save();
   await createNotification({
-  userId: studentId,
-  title: "Installment Paid",
-  message: `You paid installment of ₹${inst.amount}`,
-  type: "FEES"
-});
+    userId: studentId,
+    title: "Installment Paid",
+    message: `You paid installment of ₹${inst.amount}`,
+    type: "FEES",
+  });
 
   return fee;
 };
@@ -289,11 +289,11 @@ export const applyScholarship = async (studentId, scholarship) => {
 
   await fee.save();
   await createNotification({
-  userId: studentId,
-  title: "Scholarship Applied",
-  message: `₹${discount} discount applied to your fees`,
-  type: "FEES"
-});
+    userId: studentId,
+    title: "Scholarship Applied",
+    message: `₹${discount} discount applied to your fees`,
+    type: "FEES",
+  });
 
   return fee;
 };
