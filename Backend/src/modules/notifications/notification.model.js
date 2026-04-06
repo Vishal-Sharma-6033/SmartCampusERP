@@ -25,7 +25,7 @@ const notificationSchema = new mongoose.Schema(
 
     type: {
       type: String,
-      enum: ["assignment", "reminder", "grade", "general"],
+      enum: ["assignment", "reminder", "grade", "general", "EXAM","FEES"],
       default: "general",
     },
   },

@@ -8,11 +8,11 @@ const router = express.Router();
 // Teacher
 router.post("/", auth, role("TEACHER"), controller.createAssignment);
 // Student
-router.post("/:id/submit", auth, role("STUDENT"), controller.submitAssignment);
-router.get("/student/:id",auth,role("STUDENT"),controller.getStudentAssignments);
+router.post("/:id/submit", auth, role("STUDENT","ADMIN"), controller.submitAssignment);
+router.get("/student/:id",auth,role("STUDENT","ADMIN"),controller.getStudentAssignments);
 
-router.patch("/:submissionId/grade", auth, role("TEACHER"), controller.gradeSubmission);
-router.get("/:id/plagiarism", auth, role("TEACHER"), controller.plagiarismCheck);
-router.get("/:id/analytics", auth, role("TEACHER"), controller.analytics);
+router.patch("/:submissionId/grade", auth, role("TEACHER","ADMIN"), controller.gradeSubmission);
+router.get("/:id/plagiarism", auth, role("TEACHER","ADMIN"), controller.plagiarismCheck);
+router.get("/:id/analytics", auth, role("TEACHER","ADMIN"), controller.analytics);
 router.get("/subject/:subjectId", auth, controller.subjectFeed);
 export default router;

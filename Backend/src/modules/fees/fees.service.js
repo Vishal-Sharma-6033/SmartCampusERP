@@ -1,10 +1,10 @@
-import Fee from './fees.model.js';
-import { createOrder } from '../../services/payment.service.js';
-import fs from 'fs';
-import path from 'path';
-import PDFDocument from 'pdfkit';
-import {v4 as uuid} from 'uuid';
-
+import Fee from "./fees.model.js";
+import { createOrder } from "../../services/payment.service.js";
+import fs from "fs";
+import path from "path";
+import PDFDocument from "pdfkit";
+import { v4 as uuid } from "uuid";
+import { createNotification } from "../notifications/notification.service.js";
 
 export const createFee = async (data) => {
   const existing = await Fee.findOne({ studentId: data.studentId });
@@ -24,21 +24,27 @@ export const createFee = async (data) => {
   return fee;
 };
 
-export const getFeeByStudent = async(studentId)=>{
-    return await Fee.findOne({studentId})
-}
+export const getFeeByStudent = async (studentId) => {
+  return await Fee.findOne({ studentId });
+};
 
-export const payFees = async(studentId, amount)=>{
-    const fee = await Fee.findOne({studentId});
-    if(!fee){
-        throw new Error("Fee record not found for the student");
-    }
-    const order = await createOrder(amount);
-    return{
-        order,
-        fee,
-    }
-}
+export const payFees = async (studentId, amount) => {
+  const fee = await Fee.findOne({ studentId });
+  if (!fee) {
+    throw new Error("Fee record not found for the student");
+  }
+  const order = await createOrder(amount);
+  await createNotification({
+  userId: studentId,
+  title: "Receipt Generated",
+  message: "Your payment receipt is ready for download",
+  type: "FEES"
+});
+  return {
+    order,
+    fee,
+  };
+};
 
 export const verifyAndUpdatePayment = async (data) => {
   const { studentId, amount, paymentId, orderId } = data;
@@ -59,6 +65,12 @@ export const verifyAndUpdatePayment = async (data) => {
   });
 
   await fee.save();
+  await createNotification({
+    userId: studentId,
+    title: "Payment Successful",
+    message: `₹${amount} received. Remaining due: ₹${fee.dueAmount}`,
+    type: "FEES",
+  });
 
   return fee;
 };
@@ -110,10 +122,7 @@ export const generateReceipt = async (feeId) => {
   });
 };
 
-
-// export const generateReceipt = async (feeId) => { 
-
-
+// export const generateReceipt = async (feeId) => {
 
 //   const fee = await Fee.findById(feeId);
 
@@ -159,25 +168,28 @@ export const generateReceipt = async (feeId) => {
 //   });
 // };
 
-
-
 export const applyLateFee = async (studentId) => {
   const fee = await Fee.findOne({ studentId });
   const today = new Date();
 
   if (fee.dueDate && today > fee.dueDate && fee.dueAmount > 0) {
-    const daysLate = Math.ceil(
-      (today - fee.dueDate) / (1000 * 60 * 60 * 24)
-    );
+    const daysLate = Math.ceil((today - fee.dueDate) / (1000 * 60 * 60 * 24));
 
-    const penalty = daysLate * 50; 
+    const penalty = daysLate * 50;
 
     fee.lateFee = penalty;
     fee.dueAmount = fee.totalAmount - fee.paidAmount + penalty;
 
     await fee.save();
+
+    await createNotification({
+      userId: studentId,
+      title: "Late Fee Applied",
+      message: `A late fee of ₹${penalty} has been added`,
+      type: "FEES",
+    });
   }
-return fee;
+  return fee;
 };
 
 export const payInstallment = async (studentId, installmentIndex) => {
@@ -208,6 +220,12 @@ export const payInstallment = async (studentId, installmentIndex) => {
   else fee.status = "PARTIAL";
 
   await fee.save();
+  await createNotification({
+  userId: studentId,
+  title: "Installment Paid",
+  message: `You paid installment of ₹${inst.amount}`,
+  type: "FEES"
+});
 
   return fee;
 };
@@ -270,6 +288,12 @@ export const applyScholarship = async (studentId, scholarship) => {
   fee.dueAmount = fee.finalAmount - fee.paidAmount;
 
   await fee.save();
+  await createNotification({
+  userId: studentId,
+  title: "Scholarship Applied",
+  message: `₹${discount} discount applied to your fees`,
+  type: "FEES"
+});
 
   return fee;
 };
