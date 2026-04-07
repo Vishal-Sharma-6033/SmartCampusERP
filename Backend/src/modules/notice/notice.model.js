@@ -29,5 +29,5 @@ const noticeSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
+noticeSchema.index({ title: 'text', content: 'text' });
 export default mongoose.model("Notice", noticeSchema);

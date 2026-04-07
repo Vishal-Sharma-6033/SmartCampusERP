@@ -37,5 +37,5 @@ const bookSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
+bookSchema.index({ title: 'text', author: 'text' });
 export default mongoose.model("Book", bookSchema);
