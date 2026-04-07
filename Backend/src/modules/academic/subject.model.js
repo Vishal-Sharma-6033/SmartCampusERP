@@ -30,5 +30,5 @@ const subjectSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
+subjectSchema.index({ name: 'text', code: 'text' });
 export default mongoose.model("Subject", subjectSchema);
