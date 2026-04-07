@@ -2,6 +2,7 @@ import Subject from '../academic/subject.model.js';
 import Notice from '../notice/notice.model.js';
 import Book from '../library/book.model.js';
 import Assignment from '../assignment/assignment.model.js';
+import SearchHistory from "./searchHistory.model.js";
 
 export const globalSearch = async (query, page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
@@ -42,4 +43,20 @@ export const globalSearch = async (query, page = 1, limit = 10) => {
     books,
     assignments,
   };
+};
+
+export const saveSearch = async (userId, query) => {
+  if (!userId) return;
+
+  await SearchHistory.create({
+    user: userId,
+    query,
+  });
+};
+
+export const getRecentSearches = async (userId) => {
+  return await SearchHistory.find({ user: userId })
+    .sort({ createdAt: -1 })
+    .limit(10)
+    .select("query");
 };
