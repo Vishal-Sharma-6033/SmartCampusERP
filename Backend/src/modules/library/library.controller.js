@@ -49,8 +49,4 @@ export const verifyFine = asyncHandler(async (req, res) => {
   const { issueId } = req.body;
   const data = await libraryService.verifyFine(issueId);
   res.json(new ApiResponse(200, data));
-<<<<<<< HEAD
-});
-=======
-});
->>>>>>> 4cdd07dbacf2981a6e1b4c0a38503635040b7d31
+})

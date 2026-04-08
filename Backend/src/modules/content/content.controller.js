@@ -1,6 +1,6 @@
 import asyncHandlers from "../../utils/asyncHandler.js";
 import ContentService from '../content/content.service.js'
-import * as AIService from "../ai/ai.service.js";
+// import * as AIService from "../ai/ai.service.js";
  export const createContent = asyncHandlers(async (req, res) => {
   const content = await ContentService.create(req);
 
@@ -134,7 +134,3 @@ const controller={
     createContent,getAllContent,getContentById,deleteContent,addDownload,addView,bookmarkContent, summarizeContent, generateQuizs, streamVideo, secureDownload, previewContent, 
 }
 export default controller;
-<<<<<<< HEAD
-=======
-
->>>>>>> 4cdd07dbacf2981a6e1b4c0a38503635040b7d31

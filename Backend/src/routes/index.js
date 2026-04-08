@@ -14,7 +14,7 @@ import timetableRoutes from '../modules/timetable/timetable.routes.js'
 import feeRoutes from "../modules/fees/fees.routes.js"
 import libraryRoutes from "../modules/library/library.routes.js";
 import searchRoutes from '../modules/search/search.routes.js';
-import aiRoutes from '../modules/ai/ai.routes.js'
+// import aiRoutes from '../modules/ai/ai.routes.js'
 const router = express.Router();
 
 // router.get(
@@ -58,9 +58,7 @@ router.use("/timetable", timetableRoutes);
 router.use("/fees", feeRoutes)
 router.use("/library", libraryRoutes);
 router.use('/search', searchRoutes);
-router.use("/ai", aiRoutes);
-<<<<<<< HEAD
+// router.use("/ai", aiRoutes);
+
 export default router;
-=======
-export default router;
->>>>>>> 4cdd07dbacf2981a6e1b4c0a38503635040b7d31
+
