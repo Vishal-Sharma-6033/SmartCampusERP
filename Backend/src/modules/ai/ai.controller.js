@@ -16,4 +16,8 @@ export const chat = asyncHandler(async (req, res) => {
   const reply = await aiService.chatWithAI(message, req.user);
 
   res.json(new ApiResponse(200, reply, "AI response generated"));
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> 4cdd07dbacf2981a6e1b4c0a38503635040b7d31

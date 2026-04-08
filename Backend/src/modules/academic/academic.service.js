@@ -92,4 +92,8 @@ export const removeStudentFromSubjectService = async (subjectId, studentId) => {
   if (!subject) throw new ApiError(404, "Subject not found");
 
   return subject;
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> 4cdd07dbacf2981a6e1b4c0a38503635040b7d31

@@ -59,4 +59,8 @@ router.use("/fees", feeRoutes)
 router.use("/library", libraryRoutes);
 router.use('/search', searchRoutes);
 router.use("/ai", aiRoutes);
+<<<<<<< HEAD
 export default router;
+=======
+export default router;
+>>>>>>> 4cdd07dbacf2981a6e1b4c0a38503635040b7d31
