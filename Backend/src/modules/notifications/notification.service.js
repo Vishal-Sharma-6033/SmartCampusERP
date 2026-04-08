@@ -1,4 +1,32 @@
 import Notification from "./notification.model.js";
+import { getIO } from "../../sockets/socket.js"; 
+// export const createNotification = async ({
+//   userId,
+//   userIds,
+//   title,
+//   message,
+//   type = "general",
+// }) => {
+  
+//   if (userIds && userIds.length > 0) {
+//     const data = userIds.map((id) => ({
+//       userId: id,
+//       title,
+//       message,
+//       type,
+//     }));
+
+//     return await Notification.insertMany(data);
+//   }
+//   return await Notification.create({
+//     userId,
+//     title,
+//     message,
+//     type,
+//   });
+// };
+
+
 
 export const createNotification = async ({
   userId,
@@ -7,7 +35,9 @@ export const createNotification = async ({
   message,
   type = "general",
 }) => {
-  
+  const io = getIO(); // 🔥 socket instance
+
+  // ✅ MULTIPLE USERS
   if (userIds && userIds.length > 0) {
     const data = userIds.map((id) => ({
       userId: id,
@@ -16,14 +46,38 @@ export const createNotification = async ({
       type,
     }));
 
-    return await Notification.insertMany(data);
+    const notifications = await Notification.insertMany(data);
+
+    // 🔥 REAL-TIME EMIT (MULTIPLE)
+    userIds.forEach((id) => {
+      io.to(id.toString()).emit("notification", {
+        title,
+        message,
+        type,
+      });
+    });
+
+    return notifications;
   }
-  return await Notification.create({
+
+  // ✅ SINGLE USER
+  const notification = await Notification.create({
     userId,
     title,
     message,
     type,
   });
+
+  // 🔥 REAL-TIME EMIT (SINGLE)
+  io.to(userId.toString()).emit("notification", {
+    id: notification._id,
+    title,
+    message,
+    type,
+    createdAt: notification.createdAt,
+  });
+
+  return notification;
 };
 
 export const getNotifications = async (userId, query) => {

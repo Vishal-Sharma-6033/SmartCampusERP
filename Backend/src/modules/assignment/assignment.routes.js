@@ -6,7 +6,7 @@ import role from "../../middlewares/role.middleware.js";
 const router = express.Router();
 
 // Teacher
-router.post("/", auth, role("TEACHER"), controller.createAssignment);
+router.post("/", auth, role("TEACHER","ADMIN"), controller.createAssignment);
 // Student
 router.post("/:id/submit", auth, role("STUDENT","ADMIN"), controller.submitAssignment);
 router.get("/student/:id",auth,role("STUDENT","ADMIN"),controller.getStudentAssignments);
