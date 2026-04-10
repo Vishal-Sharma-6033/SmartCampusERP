@@ -15,6 +15,7 @@ import feeRoutes from "../modules/fees/fees.routes.js"
 import libraryRoutes from "../modules/library/library.routes.js";
 import searchRoutes from '../modules/search/search.routes.js';
 import aiRoutes from '../modules/ai/ai.routes.js'
+import analyticsRoutes from '../modules/analytics/analytics.routes.js'
 const router = express.Router();
 
 // router.get(
@@ -59,6 +60,7 @@ router.use("/fees", feeRoutes)
 router.use("/library", libraryRoutes);
 router.use('/search', searchRoutes);
 router.use("/ai", aiRoutes);
+router.use("/analytics", analyticsRoutes);
 
 export default router;
 

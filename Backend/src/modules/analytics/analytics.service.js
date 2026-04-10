@@ -2,7 +2,7 @@ import User from "../user/user.model.js";
 import Exam from "../exam/exam.model.js";
 import Result from "../exam/result.model.js";
 import Assignment from "../assignment/assignment.model.js";
-import Attendance from "../academic/attendance.model.js"; // if exists
+// import Attendance from "../academic/"; // if exists
 
 //  DASHBOARD SUMMARY
 export const getDashboardStats = async () => {
@@ -19,17 +19,64 @@ export const getDashboardStats = async () => {
   };
 };
 
+
 //  ATTENDANCE ANALYTICS
-export const getAttendanceAnalytics = async () => {
-  const data = await Attendance.aggregate([
+// export const getAttendanceAnalytics = async () => {
+//   const data = await Attendance.aggregate([
+//     {
+//       $group: {
+//         _id: "$status",
+//         count: { $sum: 1 },
+//       },
+//     },
+//   ]);
+
+//   return data;
+// };
+
+//  PERFORMANCE ANALYTICS
+export const getPerformanceAnalytics = async () => {
+  const result = await Result.aggregate([
     {
       $group: {
-        _id: "$status",
+        _id: "$subject",
+        avgMarks: { $avg: "$marksObtained" },
+      },
+    },
+  ]);
+
+  return result;
+};
+
+//  SYSTEM USAGE (LAST 7 DAYS USERS CREATED)
+export const getSystemUsage = async () => {
+  const last7Days = new Date();
+  last7Days.setDate(last7Days.getDate() - 7);
+
+  const users = await User.aggregate([
+    {
+      $match: {
+        createdAt: { $gte: last7Days },
+      },
+    },
+    {
+      $group: {
+        _id: { $dayOfWeek: "$createdAt" },
         count: { $sum: 1 },
       },
     },
   ]);
 
-  return data;
+  return users;
 };
 
+//  RECENT ACTIVITY
+export const getRecentActivity = async () => {
+  const exams = await Exam.find().sort({ createdAt: -1 }).limit(5);
+  const assignments = await Assignment.find().sort({ createdAt: -1 }).limit(5);
+
+  return {
+    recentExams: exams,
+    recentAssignments: assignments,
+  };
+};
