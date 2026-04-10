@@ -21,29 +21,34 @@ export const generateChatResponse = async (message) => {
   return "I'm your Smart Campus AI assistant. Ask about exams, assignments, or performance!";
 };
 
-export const generateRecommendations = async (studentId) => {
-  const performance = await analyzePerformance(studentId);
+export const analyzePerformance = async (studentId) => {
+  const exams = await Exam.find({ student: studentId });
+  const assignments = await Assignment.find({ student: studentId });
 
-  const recommendations = [];
+  let totalMarks = 0;
+  let obtainedMarks = 0;
 
-  if (performance.percentage < 40) {
-    recommendations.push("Focus on basics and revise daily.");
-    recommendations.push("Watch concept videos on YouTube.");
-    recommendations.push("Solve previous year papers.");
-  }
+  exams.forEach((exam) => {
+    totalMarks += exam.totalMarks || 0;
+    obtainedMarks += exam.obtainedMarks || 0;
+  });
 
-  if (performance.percentage >= 40 && performance.percentage < 75) {
-    recommendations.push("Practice more numerical problems.");
-    recommendations.push("Improve weak subjects.");
-  }
+  assignments.forEach((a) => {
+    totalMarks += a.totalMarks || 0;
+    obtainedMarks += a.marksObtained || 0;
+  });
 
-  if (performance.percentage >= 75) {
-    recommendations.push("Start advanced topics.");
-    recommendations.push("Participate in competitions.");
-  }
+  const percentage = totalMarks ? (obtainedMarks / totalMarks) * 100 : 0;
+
+  let performanceLevel = "Average";
+
+  if (percentage > 80) performanceLevel = "Excellent";
+  else if (percentage < 40) performanceLevel = "Needs Improvement";
 
   return {
-    performance,
-    recommendations,
+    totalMarks,
+    obtainedMarks,
+    percentage: percentage.toFixed(2),
+    performanceLevel,
   };
 };

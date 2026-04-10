@@ -10,3 +10,11 @@ export const chatWithAI = asyncHandler(async (req, res) => {
 
   res.json(new ApiResponse(200, response, "AI response generated"));
 });
+
+export const getStudentPerformance = asyncHandler(async (req, res) => {
+  const { studentId } = req.params;
+
+  const data = await aiService.analyzePerformance(studentId);
+
+  res.json(new ApiResponse(200, data, "Performance analyzed"));
+});
