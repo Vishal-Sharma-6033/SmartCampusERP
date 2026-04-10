@@ -5,11 +5,14 @@ import asyncHandler from "../../utils/asyncHandler.js";
 // 📊 FULL DASHBOARD
 export const getDashboard = asyncHandler(async (req, res) => {
   const stats = await analyticsService.getDashboardStats();
+  const performance = await analyticsService.getPerformanceAnalytics();
+
   
 
   return res.status(200).json(
     new ApiResponse(200, "Dashboard data fetched", {
-      stats
+      stats,
+      performance
       
     })
   );

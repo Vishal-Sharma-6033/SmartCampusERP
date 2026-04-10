@@ -19,3 +19,17 @@ export const getDashboardStats = async () => {
   };
 };
 
+//  ATTENDANCE ANALYTICS
+export const getAttendanceAnalytics = async () => {
+  const data = await Attendance.aggregate([
+    {
+      $group: {
+        _id: "$status",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  return data;
+};
+
