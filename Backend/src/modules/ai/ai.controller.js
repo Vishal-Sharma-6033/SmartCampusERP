@@ -18,3 +18,11 @@ export const getStudentPerformance = asyncHandler(async (req, res) => {
 
   res.json(new ApiResponse(200, data, "Performance analyzed"));
 });
+
+export const getRecommendations = asyncHandler(async (req, res) => {
+  const { studentId } = req.params;
+
+  const data = await aiService.generateRecommendations(studentId);
+
+  res.json(new ApiResponse(200, data, "Recommendations generated"));
+});
