@@ -8,6 +8,6 @@ export const ENV = {
   JWT_SECRET: process.env.JWT_SECRET,
   JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
 
-  JWT_EXPIRE: "15m",
+  JWT_EXPIRE: "1h",
   REFRESH_EXPIRE: "7d",
 };
