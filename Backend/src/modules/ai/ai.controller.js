@@ -26,3 +26,11 @@ export const getRecommendations = asyncHandler(async (req, res) => {
 
   res.json(new ApiResponse(200, data, "Recommendations generated"));
 });
+
+export const getWeakSubjects = asyncHandler(async (req, res) => {
+  const { studentId } = req.params;
+
+  const data = await aiService.getWeakSubjects(studentId);
+
+  res.json(new ApiResponse(200, data, "Weak subjects fetched"));
+});
