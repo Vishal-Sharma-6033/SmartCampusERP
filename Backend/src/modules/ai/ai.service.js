@@ -175,3 +175,21 @@ export const getPerformanceTrend = async (studentId) => {
     trend,
   };
 };
+
+export const getSmartResources = async (studentId) => {
+  const { weakSubjects } = await getWeakSubjects(studentId);
+
+  const resourceMap = {
+    Math: ["RD Sharma", "Khan Academy"],
+    Physics: ["HC Verma", "PW Videos"],
+    Chemistry: ["OP Tandon"],
+    English: ["Wren & Martin"],
+  };
+
+  return {
+    recommendations: weakSubjects.map((sub) => ({
+      subject: sub,
+      resources: resourceMap[sub] || ["General Study Material"],
+    })),
+  };
+};

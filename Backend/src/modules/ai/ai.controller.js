@@ -41,3 +41,11 @@ export const getPerformanceTrend = asyncHandler(async (req, res) => {
 
   res.json(new ApiResponse(200, data, "Trend analyzed"));
 });
+
+export const getSmartResources = asyncHandler(async (req, res) => {
+  const { studentId } = req.params;
+
+  const data = await aiService.getSmartResources(studentId);
+
+  res.json(new ApiResponse(200, data, "Resources generated"));
+});
