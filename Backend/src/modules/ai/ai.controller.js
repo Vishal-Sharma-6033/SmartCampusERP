@@ -34,3 +34,10 @@ export const getWeakSubjects = asyncHandler(async (req, res) => {
 
   res.json(new ApiResponse(200, data, "Weak subjects fetched"));
 });
+export const getPerformanceTrend = asyncHandler(async (req, res) => {
+  const { studentId } = req.params;
+
+  const data = await aiService.getPerformanceTrend(studentId);
+
+  res.json(new ApiResponse(200, data, "Trend analyzed"));
+});

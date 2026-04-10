@@ -1,7 +1,7 @@
 import Exam from "../exam/exam.model.js";
 import Assignment from "../assignment/assignment.model.js";
 import User from "../user/user.model.js";
-
+import Result from "../exam/result.model.js";
 
 export const generateChatResponse = async (message) => {
   const msg = message.toLowerCase();
@@ -80,20 +80,62 @@ export const generateRecommendations = async (studentId) => {
   };
 };
 
+// export const getWeakSubjects = async (studentId) => {
+//   const exams = await Exam.find({ student: studentId });
+
+//   const subjectMap = {};
+
+//   exams.forEach((exam) => {
+//     const subject = exam.subject;
+
+//     if (!subjectMap[subject]) {
+//       subjectMap[subject] = { total: 0, obtained: 0 };
+//     }
+
+//     subjectMap[subject].total += exam.totalMarks || 0;
+//     subjectMap[subject].obtained += exam.obtainedMarks || 0;
+//   });
+
+//   const weakSubjects = [];
+//   const strongSubjects = [];
+
+//   Object.keys(subjectMap).forEach((sub) => {
+//     const { total, obtained } = subjectMap[sub];
+//     const percentage = (obtained / total) * 100;
+
+//     if (percentage < 40) weakSubjects.push(sub);
+//     if (percentage > 75) strongSubjects.push(sub);
+//   });
+
+//   return {
+//     weakSubjects,
+//     strongSubjects,
+//   };
+// };
+
+
 export const getWeakSubjects = async (studentId) => {
-  const exams = await Exam.find({ student: studentId });
+  const results = await Result.find({ student: studentId }).populate(
+    "subjects.subject"
+  );
+
+  if (!results.length) {
+    return { message: "No results found" };
+  }
 
   const subjectMap = {};
 
-  exams.forEach((exam) => {
-    const subject = exam.subject;
+  results.forEach((res) => {
+    res.subjects.forEach((sub) => {
+      const subjectName = sub.subject?.name || "Unknown";
 
-    if (!subjectMap[subject]) {
-      subjectMap[subject] = { total: 0, obtained: 0 };
-    }
+      if (!subjectMap[subjectName]) {
+        subjectMap[subjectName] = { total: 0, obtained: 0 };
+      }
 
-    subjectMap[subject].total += exam.totalMarks || 0;
-    subjectMap[subject].obtained += exam.obtainedMarks || 0;
+      subjectMap[subjectName].total += 100; // assume each subject out of 100
+      subjectMap[subjectName].obtained += sub.marks || 0;
+    });
   });
 
   const weakSubjects = [];
@@ -104,11 +146,32 @@ export const getWeakSubjects = async (studentId) => {
     const percentage = (obtained / total) * 100;
 
     if (percentage < 40) weakSubjects.push(sub);
-    if (percentage > 75) strongSubjects.push(sub);
+    if (percentage >= 75) strongSubjects.push(sub);
   });
 
+  return { weakSubjects, strongSubjects };
+};
+
+export const getPerformanceTrend = async (studentId) => {
+  const results = await Result.find({ student: studentId }).sort({
+    createdAt: 1,
+  });
+
+  if (results.length < 2) {
+    return { message: "Not enough data" };
+  }
+
+  const last = results[results.length - 2];
+  const current = results[results.length - 1];
+
+  let trend = "Stable";
+
+  if (current.percentage > last.percentage) trend = "Improving";
+  if (current.percentage < last.percentage) trend = "Declining";
+
   return {
-    weakSubjects,
-    strongSubjects,
+    lastPercentage: last.percentage,
+    currentPercentage: current.percentage,
+    trend,
   };
 };
