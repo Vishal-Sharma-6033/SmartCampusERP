@@ -1,31 +1,29 @@
 export const apiShield = (req, res, next) => {
-  const data =
-    JSON.stringify(req.body) +
-    JSON.stringify(req.query) +
-    JSON.stringify(req.params);
+  try {
+    const data = JSON.stringify(req.body).toLowerCase();
 
-  const patterns = [
-    "$",
-    "{",
-    "}",
-    "<script>",
-    "SELECT",
-    "INSERT",
-    "DELETE",
-    "DROP",
-    "--",
-  ];
+    const patterns = [
+      "<script>",
+      "select ",
+      "insert ",
+      "delete ",
+      "drop ",
+      "--",
+      " or ",
+      " and "
+    ];
 
-  const isAttack = patterns.some((p) =>
-    data.toLowerCase().includes(p.toLowerCase())
-  );
+    const isAttack = patterns.some((p) => data.includes(p));
 
-  if (isAttack) {
-    return res.status(403).json({
-      success: false,
-      message: "Suspicious request blocked 🚨",
-    });
+    if (isAttack) {
+      return res.status(403).json({
+        success: false,
+        message: "Suspicious request blocked 🚨",
+      });
+    }
+
+    next();
+  } catch (err) {
+    next();
   }
-
-  next();
 };
