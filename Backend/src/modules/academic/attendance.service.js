@@ -1,8 +1,17 @@
 import Attendance from "./attendance.model.js";
 
 //  Mark Attendance
+// export const markAttendance = async (data) => {
+//   return await Attendance.create(data);
+// };
 export const markAttendance = async (data) => {
-  return await Attendance.create(data);
+  const { student, subject, date, status } = data;
+
+  return await Attendance.findOneAndUpdate(
+    { student, subject, date },
+    { status },
+    { new: true, upsert: true }
+  );
 };
 
 //  Get Student Attendance
@@ -15,4 +24,7 @@ export const getStudentAttendance = async (studentId) => {
 //  Get Attendance By Date
 export const getAttendanceByDate = async (date) => {
   return await Attendance.find({ date });
+};
+export const deleteAttendance = async (student, subject, date) => {
+  return await Attendance.findOneAndDelete({ student, subject, date });
 };

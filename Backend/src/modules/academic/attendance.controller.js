@@ -30,3 +30,14 @@ export const getAttendanceByDate = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, "Attendance by date", data));
 });
+
+// delete attendance
+export const deleteAttendance = asyncHandler(async (req, res) => {
+  const { student, subject, date } = req.body;
+
+  await attendanceService.deleteAttendance(student, subject, date);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Attendance removed"));
+});

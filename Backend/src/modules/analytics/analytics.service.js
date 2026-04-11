@@ -2,7 +2,7 @@ import User from "../user/user.model.js";
 import Exam from "../exam/exam.model.js";
 import Result from "../exam/result.model.js";
 import Assignment from "../assignment/assignment.model.js";
-// import Attendance from "../academic/"; // if exists
+import Attendance from "../academic/attendance.model.js"; // if exists
 
 //  DASHBOARD SUMMARY
 export const getDashboardStats = async () => {
@@ -21,18 +21,18 @@ export const getDashboardStats = async () => {
 
 
 //  ATTENDANCE ANALYTICS
-// export const getAttendanceAnalytics = async () => {
-//   const data = await Attendance.aggregate([
-//     {
-//       $group: {
-//         _id: "$status",
-//         count: { $sum: 1 },
-//       },
-//     },
-//   ]);
+export const getAttendanceAnalytics = async () => {
+  const data = await Attendance.aggregate([
+    {
+      $group: {
+        _id: "$status",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
 
-//   return data;
-// };
+  return data;
+};
 
 //  PERFORMANCE ANALYTICS
 export const getPerformanceAnalytics = async () => {
