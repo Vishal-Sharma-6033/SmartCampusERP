@@ -62,3 +62,11 @@ export const markAllAbsent = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, result.message, "All students marked absent"));
 });
+
+export const deleteBulkAttendance = asyncHandler(async (req, res) => {
+  const result = await attendanceService.deleteBulkAttendance(req.body);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, result.message,"Bulk attendance removed"));
+});

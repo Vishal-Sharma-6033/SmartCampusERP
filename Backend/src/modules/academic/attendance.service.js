@@ -77,3 +77,9 @@ export const markAllAbsent = async ({ subject, date, students }) => {
 
   return { message: operations.length + " students marked absent" };
 };
+
+export const deleteBulkAttendance = async ({ subject, date }) => {
+  await Attendance.deleteMany({ subject, date });
+
+  return { message: "" };
+};
