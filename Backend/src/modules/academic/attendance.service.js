@@ -25,6 +25,33 @@ export const getStudentAttendance = async (studentId) => {
 export const getAttendanceByDate = async (date) => {
   return await Attendance.find({ date });
 };
+
 export const deleteAttendance = async (student, subject, date) => {
   return await Attendance.findOneAndDelete({ student, subject, date });
+};
+
+export const bulkMarkAttendance = async ({ subject, date, records }) => {
+  const operations = records.map((rec) => ({
+    updateOne: {
+      filter: {
+        student: rec.student,
+        subject,
+        date,
+      },
+      update: {
+        $set: {
+          status: rec.status,
+        },
+      },
+      upsert: true,
+    },
+  }));
+
+  const result = await Attendance.bulkWrite(operations);
+
+  return {
+    totalRecords: records.length,
+    inserted: result.upsertedCount,
+    modified: result.modifiedCount,
+  };
 };

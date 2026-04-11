@@ -41,3 +41,16 @@ export const deleteAttendance = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, "Attendance removed"));
 });
+
+export const bulkMarkAttendance = asyncHandler(async (req, res) => {
+  const result = await attendanceService.bulkMarkAttendance(req.body);
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      result,
+      "Bulk attendance processed", 
+                           
+    )
+  );
+});
