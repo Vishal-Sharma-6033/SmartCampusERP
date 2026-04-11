@@ -55,3 +55,25 @@ export const bulkMarkAttendance = async ({ subject, date, records }) => {
     modified: result.modifiedCount,
   };
 };
+
+export const markAllAbsent = async ({ subject, date, students }) => {
+  const operations = students.map((studentId) => ({
+    updateOne: {
+      filter: {
+        student: studentId,
+        subject,
+        date,
+      },
+      update: {
+        $set: {
+          status: "absent",
+        },
+      },
+      upsert: true,
+    },
+  }));
+
+  await Attendance.bulkWrite(operations);
+
+  return { message: operations.length + " students marked absent" };
+};

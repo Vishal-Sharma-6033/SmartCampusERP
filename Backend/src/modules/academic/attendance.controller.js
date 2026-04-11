@@ -54,3 +54,11 @@ export const bulkMarkAttendance = asyncHandler(async (req, res) => {
     )
   );
 });
+
+export const markAllAbsent = asyncHandler(async (req, res) => {
+  const result = await attendanceService.markAllAbsent(req.body);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, result.message, "All students marked absent"));
+});
