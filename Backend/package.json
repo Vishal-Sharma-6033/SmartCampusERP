@@ -17,26 +17,21 @@
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.9.0",
     "cors": "^2.8.6",
-
     "dotenv": "^17.4.1",
-
-   
-
     "express": "^5.2.1",
+    "express-mongo-sanitize": "^2.2.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.3.1",
     "morgan": "^1.10.1",
     "multer": "^2.1.1",
     "node-cron": "^4.2.1",
     "pdfkit": "^0.18.0",
-
     "razorpay": "^2.9.6",
     "socket.io": "^4.8.3",
     "streamifier": "^0.1.1",
-    "uuid": "^13.0.0"
-
-   
-
+    "uuid": "^13.0.0",
+    "xss-clean": "^0.1.4",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
