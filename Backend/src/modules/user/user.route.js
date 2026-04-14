@@ -1,6 +1,6 @@
 import express from "express";
-import authMiddleware from "../../middlewares/auth.middleware.js";
-import allowRoles from "../../middlewares/role.middleware.js";
+import auth from "../../middlewares/auth.middleware.js";
+import role from "../../middlewares/role.middleware.js";
 import { ROLES } from "../../config/constants.js";
 import {
   createUser,
@@ -11,16 +11,23 @@ import {
   linkParentToStudent,
   getMyBookmarks,
 } from "./user.controller.js";
+import { auditMiddleware } from "../../middlewares/audit.middleware.js";
 
 const router = express.Router();
 
-router.post("/create", authMiddleware, allowRoles(ROLES.ADMIN, ROLES.SUPER_ADMIN), createUser);
-router.get("/", authMiddleware, allowRoles(ROLES.ADMIN, ROLES.SUPER_ADMIN), getAllUsers);
-router.get("/me", authMiddleware, getMyProfile);
-router.put("/:id", authMiddleware, allowRoles(ROLES.ADMIN, ROLES.SUPER_ADMIN), updateUser);
-router.delete("/:id", authMiddleware, allowRoles(ROLES.ADMIN), deleteUser);
-router.post("/link-parent", authMiddleware, allowRoles(ROLES.ADMIN), linkParentToStudent);
+router.post("/create",auth, role(ROLES.ADMIN),auditMiddleware("CREATE", "USER"),createUser);
 
-router.get("/me/bookmarks", authMiddleware, getMyBookmarks)
+router.get("/",auth, role(ROLES.ADMIN),getAllUsers);
+
+router.get("/me",auth,getMyProfile);
+
+router.put("/:id",auth, role(ROLES.ADMIN),auditMiddleware("UPDATE", "USER"),updateUser);
+
+router.delete("/:id",auth, role(ROLES.ADMIN),auditMiddleware("DELETE", "USER"),deleteUser);
+
+router.post("/link-parent",auth, role(ROLES.ADMIN),auditMiddleware("LINK_PARENT", "USER"),linkParentToStudent);
+
+router.get("/me/bookmarks",auth, role(ROLES.ADMIN, ROLES.TEACHER, ROLES.STUDENT),getMyBookmarks);
+
 
 export default router;

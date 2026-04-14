@@ -50,12 +50,8 @@ router.use("/users", userRoutes);
 router.use("/academic", academicRoutes);
 router.use("/content", contentRoutes)
 router.use("/assignments", assignmentRoutes)
-
 router.use("/notifications", notificationRoutes);
-
 router.use("/notices", noticeRoutes);
-
-
 router.use("/exams", examRoutes);
 router.use("/timetable", timetableRoutes);
 router.use("/fees", feeRoutes)
@@ -65,6 +61,7 @@ router.use("/ai", aiRoutes);
 router.use("/attendance", attendanceRoutes);
 router.use("/analytics", analyticsRoutes);
 router.use("/admin", adminRoutes);
+
 
 export default router;
 
