@@ -6,12 +6,19 @@ import role from "../../middlewares/role.middleware.js";
 import { ROLES } from "../../config/constants.js";
 
 const router = express.Router();
+import { auditMiddleware } from "../../middlewares/audit.middleware.js";
 
-router.post("/chat", auth,role(ROLES.ADMIN,ROLES.STUDENT), chatWithAI);
-router.get("/performance/:studentId", auth, getStudentPerformance);
-router.get("/recommendations/:studentId", auth, getRecommendations);
-router.get("/weak-areas/:studentId", auth, getWeakSubjects);
-router.get("/trend/:studentId", auth, getPerformanceTrend);
-router.get("/resources/:studentId", auth, getSmartResources);
+
+router.post("/chat",auth,role(ROLES.ADMIN, ROLES.STUDENT),auditMiddleware("AI_CHAT", "AI"), chatWithAI);
+
+router.get("/performance/:studentId",auth,role(ROLES.ADMIN, ROLES.STUDENT),auditMiddleware("VIEW_PERFORMANCE", "AI"), getStudentPerformance);
+
+router.get("/recommendations/:studentId",auth,role(ROLES.ADMIN, ROLES.STUDENT),auditMiddleware("VIEW_RECOMMENDATION", "AI"), getRecommendations);
+ 
+router.get("/weak-areas/:studentId",auth,role(ROLES.ADMIN, ROLES.STUDENT),auditMiddleware("VIEW_WEAK_AREAS", "AI"), getWeakSubjects);
+
+router.get("/trend/:studentId",auth,role(ROLES.ADMIN, ROLES.STUDENT),auditMiddleware("VIEW_TREND", "AI"), getPerformanceTrend);
+
+router.get("/resources/:studentId",auth,role(ROLES.ADMIN, ROLES.STUDENT),auditMiddleware("VIEW_RESOURCES", "AI"), getSmartResources);
 
 export default router;

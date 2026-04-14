@@ -22,11 +22,19 @@ export const auditMiddleware = (action, module) => {
         user: req.user?._id,
         action,
         module,
+        // details: {
+        //   url: req.originalUrl,
+        //   method: req.method,
+        //   params: req.params,
+        //   body: req.body,
+        // },
         details: {
           url: req.originalUrl,
           method: req.method,
           params: req.params,
-          body: req.body,
+
+          // limit body size for logs
+          body: Array.isArray(req.body) ? { count: req.body.length } : req.body,
         },
         ip: req.headers["x-forwarded-for"] || req.ip,
       });
