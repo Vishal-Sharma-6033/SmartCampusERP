@@ -38,4 +38,8 @@ export const restoreUser = asyncHandler(async (req, res) => {
   res.json(new ApiResponse(200, user, "User restored"));
 });
 
-
+//  HARD DELETE
+export const hardDeleteUser = asyncHandler(async (req, res) => {
+  const user = await adminService.hardDeleteUser(req.params.id);
+  res.json(new ApiResponse(200, user, "User permanently deleted"));
+});

@@ -39,3 +39,9 @@ export const softDeleteUser = async (userId) => {
 export const restoreUser = async (userId) => {
   return await User.findByIdAndUpdate(userId, { isDeleted: false }, { new: true });
 };
+
+
+//  HARD DELETE (SUPER ADMIN ONLY) abhi admin bhi kr skta hai
+export const hardDeleteUser = async (userId) => {
+  return await User.findByIdAndDelete(userId);
+};
