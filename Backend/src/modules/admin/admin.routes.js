@@ -10,4 +10,5 @@ router.get("/settings", auth, restrictTo("ADMIN"), adminController.getSettings);
 router.patch("/user/:id/delete", auth, restrictTo("ADMIN"), adminController.deleteUser);
 router.patch("/user/:id/restore", auth, restrictTo("ADMIN"), adminController.restoreUser);
 router.delete("/user/:id/hard", auth, restrictTo("ADMIN"), adminController.hardDeleteUser);
+
 export default router;
