@@ -18,7 +18,11 @@ export const updateSetting = asyncHandler(async (req, res) => {
   res.json(new ApiResponse(200, setting, "Setting updated"));
 });
 
-
+// GET SETTINGS
+export const getSettings = asyncHandler(async (req, res) => {
+  const settings = await adminService.getSettings();
+  res.json(new ApiResponse(200, settings, "Settings fetched"));
+});
 
 
 

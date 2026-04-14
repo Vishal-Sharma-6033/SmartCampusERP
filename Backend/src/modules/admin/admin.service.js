@@ -24,3 +24,8 @@ export const setSetting = async (key, value) => {
     { upsert: true, new: true }
   );
 };
+
+//  GET SETTINGS
+export const getSettings = async () => {
+  return await SystemSetting.find();
+};

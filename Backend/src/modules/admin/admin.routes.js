@@ -6,4 +6,6 @@ const router = express.Router();
 
 router.get("/logs", auth, restrictTo("ADMIN"), adminController.getLogs);
 router.post("/settings", auth, restrictTo("ADMIN"), adminController.updateSetting);
+router.get("/settings", auth, restrictTo("ADMIN"), adminController.getSettings);
+
 export default router;
