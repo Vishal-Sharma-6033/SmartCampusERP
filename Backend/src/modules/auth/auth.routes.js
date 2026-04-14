@@ -6,10 +6,12 @@ import {
   loginSchema,
 } from "./auth.validation.js";
 import { authLimiter } from "../../security/rateLimiter.js";
-
+import { auditMiddleware } from "../../middlewares/audit.middleware.js";
 const router = express.Router();
 
-router.post("/register",  validate(registerSchema), register);
-router.post("/login", authLimiter, validate(loginSchema), login);
+
+router.post("/register",validate(registerSchema),auditMiddleware("REGISTER", "AUTH"), register);
+
+router.post("/login",authLimiter,validate(loginSchema),auditMiddleware("LOGIN_ATTEMPT", "AUTH"), login);
 
 export default router;
