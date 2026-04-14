@@ -1,0 +1,45 @@
+import * as adminService from "./admin.service.js";
+import asyncHandler from "../../utils/asyncHandler.js";
+import ApiResponse from "../../utils/ApiResponse.js";
+
+
+
+// get all logs
+export const getLogs = asyncHandler(async (req, res) => {
+    const logs = await adminService.getAuditLogs();
+    res.status(200).json(new ApiResponse("Audit logs fetched successfully", logs));
+});
+
+//  UPDATE SETTINGS
+export const updateSetting = asyncHandler(async (req, res) => {
+  const { key, value } = req.body;
+  const setting = await adminService.setSetting(key, value);
+
+  res.json(new ApiResponse(200, setting, "Setting updated"));
+});
+
+// GET SETTINGS
+export const getSettings = asyncHandler(async (req, res) => {
+  const settings = await adminService.getSettings();
+  res.json(new ApiResponse(200, settings, "Settings fetched"));
+});
+
+
+//  DELETE USER
+export const deleteUser = asyncHandler(async (req, res) => {
+  const user = await adminService.softDeleteUser(req.params.id);
+  res.json(new ApiResponse(200, user, "User soft deleted"));
+});
+
+
+//  RESTORE USER
+export const restoreUser = asyncHandler(async (req, res) => {
+  const user = await adminService.restoreUser(req.params.id);
+  res.json(new ApiResponse(200, user, "User restored"));
+});
+
+//  HARD DELETE
+export const hardDeleteUser = asyncHandler(async (req, res) => {
+  const user = await adminService.hardDeleteUser(req.params.id);
+  res.json(new ApiResponse(200, user, "User permanently deleted"));
+});
