@@ -25,6 +25,11 @@ export const getSettings = asyncHandler(async (req, res) => {
 });
 
 
+//  DELETE USER
+export const deleteUser = asyncHandler(async (req, res) => {
+  const user = await adminService.softDeleteUser(req.params.id);
+  res.json(new ApiResponse(200, user, "User soft deleted"));
+});
 
 
 

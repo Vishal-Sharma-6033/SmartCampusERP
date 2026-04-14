@@ -29,3 +29,8 @@ export const setSetting = async (key, value) => {
 export const getSettings = async () => {
   return await SystemSetting.find();
 };
+
+//  SOFT DELETE USER
+export const softDeleteUser = async (userId) => {
+  return await User.findByIdAndUpdate(userId, { isDeleted: true }, { new: true });
+};
