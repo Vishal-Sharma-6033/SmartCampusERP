@@ -1,0 +1,26 @@
+import { AuditLog, SystemSetting } from "./admin.model.js";
+import User from "../user/user.model.js";
+
+
+// create audit log
+export const createAuditLog = async(data)=>{
+    return await AuditLog.create(data);
+}
+
+// get all logs
+export const getAuditLogs = async () => {
+  const logs = await AuditLog.find()
+    .populate("user", "name email")
+    .sort({ createdAt: -1 });
+
+  return logs;
+};
+
+//  SET SYSTEM SETTING
+export const setSetting = async (key, value) => {
+  return await SystemSetting.findOneAndUpdate(
+    { key },
+    { value },
+    { upsert: true, new: true }
+  );
+};

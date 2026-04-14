@@ -17,6 +17,7 @@ import searchRoutes from '../modules/search/search.routes.js';
 import aiRoutes from '../modules/ai/ai.routes.js'
 import attendanceRoutes from '../modules/academic/attendance.routes.js'
 import analyticsRoutes from '../modules/analytics/analytics.routes.js'
+import adminRoutes from '../modules/admin/admin.routes.js'
 const router = express.Router();
 
 // router.get(
@@ -63,6 +64,7 @@ router.use('/search', searchRoutes);
 router.use("/ai", aiRoutes);
 router.use("/attendance", attendanceRoutes);
 router.use("/analytics", analyticsRoutes);
+router.use("/admin", adminRoutes);
 
 export default router;
 
