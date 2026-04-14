@@ -8,4 +8,6 @@ router.get("/logs", auth, restrictTo("ADMIN"), adminController.getLogs);
 router.post("/settings", auth, restrictTo("ADMIN"), adminController.updateSetting);
 router.get("/settings", auth, restrictTo("ADMIN"), adminController.getSettings);
 router.patch("/user/:id/delete", auth, restrictTo("ADMIN"), adminController.deleteUser);
+router.patch("/user/:id/restore", auth, restrictTo("ADMIN"), adminController.restoreUser);
+
 export default router;

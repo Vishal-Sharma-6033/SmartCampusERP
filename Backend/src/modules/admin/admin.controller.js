@@ -32,4 +32,10 @@ export const deleteUser = asyncHandler(async (req, res) => {
 });
 
 
+//  RESTORE USER
+export const restoreUser = asyncHandler(async (req, res) => {
+  const user = await adminService.restoreUser(req.params.id);
+  res.json(new ApiResponse(200, user, "User restored"));
+});
+
 

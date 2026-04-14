@@ -34,3 +34,8 @@ export const getSettings = async () => {
 export const softDeleteUser = async (userId) => {
   return await User.findByIdAndUpdate(userId, { isDeleted: true }, { new: true });
 };
+
+//  RESTORE USER
+export const restoreUser = async (userId) => {
+  return await User.findByIdAndUpdate(userId, { isDeleted: false }, { new: true });
+};
