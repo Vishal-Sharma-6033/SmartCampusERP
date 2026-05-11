@@ -7,8 +7,8 @@ import { createNotification } from '../notifications/notification.service.js';
 
 export const createAssignment = async(data,user)=>{
     return await Assignment.create({
-        ...data,
-        teracherId:user.id
+      ...data,
+      teacherId:user.id
     })
 }
 
@@ -26,7 +26,12 @@ export const submitAssignment = async (assignmentId, data, user) => {
 
   if (isLate) {
     const hoursLate = (now - assignment.deadline) / (1000 * 60 * 60);
-    penalty = Math.min(assignment.totalMarks * 0.1, hoursLate);
+    const daysLate = hoursLate / 24;
+    
+    // Penalty: 2% of total marks per day, capped at 10% of total marks
+    const dailyPenaltyRate = assignment.totalMarks * 0.02;
+    const maxPenalty = assignment.totalMarks * 0.1;
+    penalty = Math.min(daysLate * dailyPenaltyRate, maxPenalty);
   }
 
   const submission = await Submission.create({
@@ -37,11 +42,11 @@ export const submitAssignment = async (assignmentId, data, user) => {
     latePenalty: penalty,
   });
 
-if (!assignment.teracherId) {
+if (!assignment.teacherId) {
   console.log(" teacherId missing in assignment");
 } else {
   await createNotification({
-    userId: assignment.teracherId,
+    userId: assignment.teacherId,
     title: "New Assignment Submission",
     message: `A student submitted "${assignment.title}"`,
     type: "assignment"

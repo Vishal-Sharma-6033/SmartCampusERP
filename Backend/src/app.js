@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 import { xssSanitizer } from "./security/xssSanitizer.js";
 import { helmetConfig } from "./security/helmet.js";
@@ -10,6 +11,7 @@ import { apiShield } from "./security/apiShield.js";
 import routes from "./routes/index.js";
 import errorHandler from "./middlewares/error.middleware.js";
 import morganMiddleware from "./middlewares/logger.middleware.js";
+import { ENV } from "./config/env.js";
 
 const app = express();
 
@@ -19,12 +21,20 @@ app.use(globalLimiter);
 
 //  Core Middlewares
 app.use(cors({
-  origin: "*",
+  origin: (origin, callback) => {
+    if (!origin || ENV.ALLOWED_ORIGINS.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS: Origin not allowed"));
+    }
+  },
   credentials: true,
+  optionsSuccessStatus: 200,
 }));
 
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+app.use(cookieParser());
 app.use(morganMiddleware);
 
 //  SAFE SECURITY (IMPORTANT ORDER)

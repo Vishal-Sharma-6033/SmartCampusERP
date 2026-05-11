@@ -175,7 +175,9 @@ export const applyLateFee = async (studentId) => {
   if (fee.dueDate && today > fee.dueDate && fee.dueAmount > 0) {
     const daysLate = Math.ceil((today - fee.dueDate) / (1000 * 60 * 60 * 24));
 
-    const penalty = daysLate * 50;
+    // Penalty: ₹50 per day, capped at 15% of total fee amount
+    const maxPenalty = fee.totalAmount * 0.15;
+    const penalty = Math.min(daysLate * 50, maxPenalty);
 
     fee.lateFee = penalty;
     fee.dueAmount = fee.totalAmount - fee.paidAmount + penalty;
