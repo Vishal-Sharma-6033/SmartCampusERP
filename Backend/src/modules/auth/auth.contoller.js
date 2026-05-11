@@ -13,9 +13,22 @@ export const register = asyncHandlers(async (req, res) => {
 
 // LOGIN
 export const login = asyncHandlers(async (req, res) => {
-  const data = await AuthService.loginUser(req.body);
+  const { user, accessToken, refreshToken } = await AuthService.loginUser(req.body);
+
+  // Set refresh token as HTTP-only cookie (secure from XSS)
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // HTTPS only in production
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
 
   res.status(200).json(
-    new ApiResponse(200, data, "Login successful")
+    new ApiResponse(200, {
+      user,
+      accessToken,
+      refreshToken, // Also include in response for client reference
+    }, "Login successful")
   );
+});
 });

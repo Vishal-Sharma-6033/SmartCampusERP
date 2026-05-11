@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 import { xssSanitizer } from "./security/xssSanitizer.js";
 import { helmetConfig } from "./security/helmet.js";
@@ -33,6 +34,7 @@ app.use(cors({
 
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+app.use(cookieParser());
 app.use(morganMiddleware);
 
 //  SAFE SECURITY (IMPORTANT ORDER)
