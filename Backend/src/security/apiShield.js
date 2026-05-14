@@ -1,7 +1,13 @@
 /**
  * API Shield - Secondary defense layer against injection attacks
- * PRIMARY defense: Use parameterized queries (Mongoose/ORM handles this automatically)
- * This middleware adds defense-in-depth by blocking common injection patterns
+ * 
+ * IMPORTANT: This is NOT the primary defense.
+ * PRIMARY defense: Always use parameterized queries (Mongoose handles this automatically)
+ * 
+ * This middleware adds defense-in-depth by catching obvious attack patterns,
+ * but a sophisticated attacker could bypass it. Never rely on this alone.
+ * 
+ * For production: Use Web Application Firewall (WAF) in addition to this.
  */
 export const apiShield = (req, res, next) => {
   try {

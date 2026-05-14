@@ -3,7 +3,7 @@ import authRoutes from "../modules/auth/auth.routes.js";
 import authMiddleware from "../middlewares/auth.middleware.js";
 import allowRoles from "../middlewares/role.middleware.js";
 import { ROLES } from "../config/constants.js";
-import userRoutes from "../modules/user/user.route.js";
+import userRoutes from "../modules/user/user.routes.js";
 import academicRoutes from "../modules/academic/academic.routes.js";
 import contentRoutes from '../modules/content/content.routes.js'
 import assignmentRoutes from '../modules/assignment/assignment.routes.js'
@@ -46,7 +46,9 @@ router.get("/test", (req, res) => {
 
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
-// router.use("/tenant", tenantRoutes);
+// Uncomment below when tenant routes are needed
+// import tenantRoutes from "../modules/tenants/tenant.routes.js";
+// router.use("/tenants", tenantRoutes);
 router.use("/academic", academicRoutes);
 router.use("/content", contentRoutes)
 router.use("/assignments", assignmentRoutes)
