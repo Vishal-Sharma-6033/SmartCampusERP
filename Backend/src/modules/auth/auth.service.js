@@ -3,6 +3,13 @@ import bcrypt from "bcryptjs";
 import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.js";
 import ApiError from "../../utils/ApiError.js";
 
+const toSafeUser = (user) => {
+  const userObject = user.toObject();
+  delete userObject.password;
+  delete userObject.__v;
+  return userObject;
+};
+
 // REGISTER
 export const registerUser = async (data) => {
   const existingUser = await User.findOne({
@@ -22,14 +29,14 @@ export const registerUser = async (data) => {
     role: data.role || "STUDENT",
   });
 
-  return user;
+  return toSafeUser(user);
 };
 
 //  LOGIN
 export const loginUser = async (data) => {
   const user = await User.findOne({
     email: data.email.toLowerCase(),
-  });
+  }).select("+password");
 
   if (!user) {
     throw new ApiError(404, "User not found");
@@ -42,7 +49,7 @@ export const loginUser = async (data) => {
   }
 
   return {
-    user,
+    user: toSafeUser(user),
     accessToken: generateAccessToken(user),
     refreshToken: generateRefreshToken(user),
   };
