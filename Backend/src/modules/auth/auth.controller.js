@@ -27,7 +27,6 @@ export const login = asyncHandlers(async (req, res) => {
     new ApiResponse(200, {
       user,
       accessToken,
-      refreshToken, // Also include in response for client reference
     }, "Login successful")
   );
 });

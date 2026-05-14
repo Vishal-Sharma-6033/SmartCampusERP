@@ -5,10 +5,11 @@ import connectDB from "./config/db.js";
 import http from "http";
 import './modules/assignment/assignment.cron.js'
 import { initSocket } from "./sockets/socket.js";
+import { ENV } from "./config/env.js";
 // Connect DB
 connectDB();
 
-const PORT = process.env.PORT || 5000;
+const PORT = ENV.PORT;
 
 
 // Create HTTP server
