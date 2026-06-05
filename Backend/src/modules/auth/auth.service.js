@@ -1,7 +1,9 @@
 import User from "../user/user.model.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.js";
 import ApiError from "../../utils/ApiError.js";
+import { ENV } from "../../config/env.js";
 
 const toSafeUser = (user) => {
   const userObject = user.toObject();
@@ -53,4 +55,36 @@ export const loginUser = async (data) => {
     accessToken: generateAccessToken(user),
     refreshToken: generateRefreshToken(user),
   };
-}
+};
+
+// REFRESH ACCESS TOKEN
+export const refreshAccessToken = async (token) => {
+  if (!token) {
+    throw new ApiError(401, "Refresh token missing");
+  }
+
+  let decoded;
+  try {
+    decoded = jwt.verify(token, ENV.JWT_REFRESH_SECRET);
+  } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      throw new ApiError(401, "Refresh token has expired, please login again");
+    }
+    throw new ApiError(401, "Invalid refresh token");
+  }
+
+  // Confirm the user still exists and is active
+  const user = await User.findById(decoded.id);
+  if (!user) {
+    throw new ApiError(401, "User no longer exists");
+  }
+  if (!user.isActive) {
+    throw new ApiError(403, "Account is deactivated");
+  }
+
+  // Issue a new access token + rotate the refresh token
+  const newAccessToken = generateAccessToken(user);
+  const newRefreshToken = generateRefreshToken(user);
+
+  return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+};
