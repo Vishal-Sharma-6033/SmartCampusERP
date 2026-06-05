@@ -19,4 +19,6 @@ router.get("/date",auth,role(ROLES.STUDENT, ROLES.TEACHER, ROLES.ADMIN),  contro
 
 router.post("/generate",auth,role(ROLES.ADMIN),auditMiddleware("GENERATE", "TIMETABLE"), controller.generateTimetable);
 
+router.delete("/:id", auth, role(ROLES.ADMIN), auditMiddleware("DELETE", "TIMETABLE"), controller.deleteTimetable);
+
 export default router;

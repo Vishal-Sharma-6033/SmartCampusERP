@@ -92,3 +92,12 @@ export const gradeSubmission = async (submissionId, data) => {
 export const getAssignmentsBySubject =  async (subjectId) => {
   return await Assignment.find({ subjectId }).sort({ createdAt: -1 });
 };
+
+export const getAssignmentSubmissions = async (assignmentId) => {
+  return await Submission.find({ assignmentId })
+    .populate("studentId", "name email");
+};
+
+export const deleteAssignment = async (id) => {
+  return await Assignment.findByIdAndDelete(id);
+};

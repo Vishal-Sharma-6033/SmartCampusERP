@@ -140,3 +140,9 @@ export const generateSmartTimetable = async ({
 
   return await TimeTable.insertMany(timetableData);
 };
+
+export const deleteTimetable = async (id) => {
+  const deleted = await TimeTable.findByIdAndDelete(id);
+  if (!deleted) throw new ApiError(404, "Timetable not found");
+  return deleted;
+};

@@ -56,3 +56,13 @@ export const subjectFeed = asyncHandler(async (req, res) => {
   const data = await service.getAssignmentsBySubject(req.params.subjectId);
   res.json(new ApiResponse(200, data));
 });
+
+export const getAssignmentSubmissions = asyncHandler(async (req, res) => {
+  const data = await service.getAssignmentSubmissions(req.params.id);
+  res.json(new ApiResponse(200, data));
+});
+
+export const deleteAssignment = asyncHandler(async (req, res) => {
+  await service.deleteAssignment(req.params.id);
+  res.json(new ApiResponse(200, null, "Assignment deleted successfully"));
+});

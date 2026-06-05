@@ -42,3 +42,8 @@ export const generateTimetable = asyncHandler(async (req, res) => {
 
   res.json(new ApiResponse(200, data, "Smart timetable generated"));
 });
+
+export const deleteTimetable = asyncHandler(async (req, res) => {
+  await service.deleteTimetable(req.params.id);
+  res.status(200).json(new ApiResponse(200, null, "Timetable deleted successfully"));
+});

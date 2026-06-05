@@ -21,4 +21,8 @@ router.get("/:id/analytics",auth,role(ROLES.TEACHER, ROLES.ADMIN), controller.an
 
 router.get("/subject/:subjectId",auth,role(ROLES.TEACHER, ROLES.ADMIN), controller.subjectFeed);
 
+router.get("/:id/submissions", auth, role(ROLES.TEACHER, ROLES.ADMIN), controller.getAssignmentSubmissions);
+
+router.delete("/:id", auth, role(ROLES.TEACHER, ROLES.ADMIN), auditMiddleware("DELETE", "ASSIGNMENT"), controller.deleteAssignment);
+
 export default router;
