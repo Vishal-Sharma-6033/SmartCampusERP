@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import Fee from "./fees.model.js";
 import { createOrder } from "../../services/payment.service.js";
 import fs from "fs";
@@ -5,6 +6,7 @@ import path from "path";
 import PDFDocument from "pdfkit";
 import { v4 as uuid } from "uuid";
 import { createNotification } from "../notifications/notification.service.js";
+import ApiError from "../../utils/ApiError.js";
 
 export const createFee = async (data) => {
   const existing = await Fee.findOne({ studentId: data.studentId });
@@ -47,12 +49,34 @@ export const payFees = async (studentId, amount) => {
 };
 
 export const verifyAndUpdatePayment = async (data) => {
-  const { studentId, amount, paymentId, orderId } = data;
+  const { studentId, amount, paymentId, orderId, razorpaySignature } = data;
 
+  // ✅ STEP 1: Cryptographic HMAC signature verification
+  // Razorpay signs: orderId + "|" + paymentId with your key_secret
+  if (!razorpaySignature) {
+    throw new ApiError(400, "Payment signature is required");
+  }
+
+  const expectedSignature = crypto
+    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+    .update(`${orderId}|${paymentId}`)
+    .digest("hex");
+
+  if (expectedSignature !== razorpaySignature) {
+    throw new ApiError(400, "Payment verification failed: invalid signature");
+  }
+
+  // ✅ STEP 2: Find the fee record
   const fee = await Fee.findOne({ studentId });
+  if (!fee) {
+    throw new ApiError(404, "Fee record not found for this student");
+  }
 
+  // ✅ STEP 3: Update payment totals
   fee.paidAmount += amount;
-  fee.dueAmount = fee.totalAmount - fee.paidAmount;
+  // Use finalAmount (post-scholarship) if set, otherwise totalAmount
+  const baseAmount = fee.finalAmount ?? fee.totalAmount;
+  fee.dueAmount = baseAmount - fee.paidAmount;
 
   if (fee.dueAmount <= 0) fee.status = "PAID";
   else fee.status = "PARTIAL";
@@ -65,6 +89,7 @@ export const verifyAndUpdatePayment = async (data) => {
   });
 
   await fee.save();
+
   await createNotification({
     userId: studentId,
     title: "Payment Successful",
