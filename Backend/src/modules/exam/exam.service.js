@@ -220,3 +220,7 @@ export const generateSeating = async (examId, options = {}) => {
     blocksUsed: block,
   };
 };
+
+export const getStudentRegistrations = async (studentId) => {
+  return await ExamRegistration.find({ student: studentId });
+};

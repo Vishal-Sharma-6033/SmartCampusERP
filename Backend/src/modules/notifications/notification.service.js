@@ -106,3 +106,10 @@ export const markOneAsRead = async (id) => {
     { new: true },
   );
 };
+
+export const markAllAsRead = async (userId) => {
+  return await Notification.updateMany(
+    { userId, isRead: false },
+    { isRead: true }
+  );
+};

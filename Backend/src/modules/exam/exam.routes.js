@@ -14,6 +14,9 @@ router.get("/",auth,role(ROLES.STUDENT, ROLES.TEACHER, ROLES.ADMIN),controller.g
 
 router.post("/register",auth,role(ROLES.STUDENT),auditMiddleware("REGISTER", "EXAM"),controller.register);
 
+router.get("/registrations", auth, role(ROLES.STUDENT), controller.getRegistrations);
+
+
 router.get("/results",auth,role(ROLES.STUDENT, ROLES.TEACHER, ROLES.ADMIN),controller.results);
 
 router.get("/hallticket",auth,role(ROLES.STUDENT, ROLES.ADMIN),controller.hallTicket);

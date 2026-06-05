@@ -110,3 +110,14 @@ export const createNotification = asyncHandler(async (req, res) => {
     new ApiResponse(201, data, "Notification created successfully")
   );
 });
+
+/**
+ * 📌 Mark All Notifications as Read
+ */
+export const markAllAsRead = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const result = await service.markAllAsRead(userId);
+  return res.status(200).json(
+    new ApiResponse(200, result, "All notifications marked as read")
+  );
+});

@@ -13,7 +13,16 @@ import {
 } from "./user.controller.js";
 import { auditMiddleware } from "../../middlewares/audit.middleware.js";
 
+import ApiError from "../../utils/ApiError.js";
+
 const router = express.Router();
+
+const requireSelfOrAdmin = (req, res, next) => {
+  if (req.user.role === ROLES.ADMIN || req.user.id === req.params.id) {
+    return next();
+  }
+  next(new ApiError(403, "Access denied: you can only modify your own profile"));
+};
 
 router.post("/create",auth, role(ROLES.ADMIN),auditMiddleware("CREATE", "USER"),createUser);
 
@@ -21,7 +30,7 @@ router.get("/",auth, role(ROLES.ADMIN),getAllUsers);
 
 router.get("/me",auth,getMyProfile);
 
-router.put("/:id",auth, role(ROLES.ADMIN),auditMiddleware("UPDATE", "USER"),updateUser);
+router.put("/:id",auth, role(ROLES.ADMIN, ROLES.STUDENT, ROLES.TEACHER, ROLES.PARENT),requireSelfOrAdmin,auditMiddleware("UPDATE", "USER"),updateUser);
 
 router.delete("/:id",auth, role(ROLES.ADMIN),auditMiddleware("DELETE", "USER"),deleteUser);
 

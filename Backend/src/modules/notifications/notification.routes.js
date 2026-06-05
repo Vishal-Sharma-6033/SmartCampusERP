@@ -11,6 +11,8 @@ router.get("/",auth,role(ROLES.STUDENT, ROLES.TEACHER, ROLES.ADMIN),controller.g
 
 router.post("/",auth,role(ROLES.TEACHER, ROLES.ADMIN),auditMiddleware("CREATE_NOTIFICATION", "NOTIFICATION"),controller.createNotification);
 
+router.patch("/read-all",auth,role(ROLES.STUDENT, ROLES.TEACHER, ROLES.ADMIN),auditMiddleware("MARK_READ_ALL", "NOTIFICATION"),controller.markAllAsRead);
+
 router.patch("/:id/read",auth,role(ROLES.STUDENT, ROLES.TEACHER, ROLES.ADMIN),auditMiddleware("MARK_READ", "NOTIFICATION"),controller.markAsRead);
 
 export default router;

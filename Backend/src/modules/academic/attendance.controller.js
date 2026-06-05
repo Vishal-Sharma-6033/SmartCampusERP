@@ -8,7 +8,7 @@ export const markAttendance = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiResponse(201, "Attendance marked", attendance));
+    .json(new ApiResponse(201, attendance, "Attendance marked"));
 });
 
 //  Student Attendance
@@ -19,7 +19,7 @@ export const getStudentAttendance = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "Attendance fetched", data));
+    .json(new ApiResponse(200, data, "Attendance fetched"));
 });
 
 //  By Date
@@ -28,7 +28,7 @@ export const getAttendanceByDate = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "Attendance by date", data));
+    .json(new ApiResponse(200, data, "Attendance by date"));
 });
 
 // delete attendance
@@ -39,7 +39,7 @@ export const deleteAttendance = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "Attendance removed"));
+    .json(new ApiResponse(200, null, "Attendance removed"));
 });
 
 export const bulkMarkAttendance = asyncHandler(async (req, res) => {

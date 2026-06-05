@@ -82,17 +82,39 @@ export const deleteUser = async (userId) => {
 
 //  GET ALL USERS (pagination + search + filter)
 export const getAllUsers = async (query) => {
-  const { page = 1, limit = 10, search = "", role } = query;
+  const { page = 1, limit = 10, search = "", role, status } = query;
 
-  const filter = {
-    isActive: true,
-  };
-  if (search) {
+  const filter = {};
+
+  if (status === 'deactivated') {
     filter.$or = [
-      { name: { $regex: search, $options: "i" } },
-      { email: { $regex: search, $options: "i" } },
+      { isActive: false },
+      { isDeleted: true }
     ];
+  } else {
+    filter.isActive = true;
+    filter.isDeleted = { $ne: true };
   }
+
+  if (search) {
+    const searchFilter = {
+      $or: [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+      ]
+    };
+    
+    if (filter.$or) {
+      filter.$and = [
+        { $or: filter.$or },
+        searchFilter
+      ];
+      delete filter.$or;
+    } else {
+      filter.$or = searchFilter.$or;
+    }
+  }
+
   if (role) {
     filter.role = role;
   }

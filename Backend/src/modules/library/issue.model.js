@@ -36,6 +36,12 @@ const issueSchema = new mongoose.Schema(
       enum: ["ISSUED", "RETURNED"],
       default: "ISSUED",
     },
+
+    paymentStatus: {
+      type: String,
+      enum: ["PENDING", "PAID"],
+      default: "PENDING",
+    },
   },
   { timestamps: true }
 );

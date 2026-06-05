@@ -90,7 +90,16 @@ export const getAll = async (query) => {
     };
   }
 
+  if (query.type && query.type.toLowerCase() !== 'all') {
+    filter.type = query.type.toLowerCase();
+  }
+
+  if (query.subjectId) {
+    filter.subjectId = query.subjectId;
+  }
+
   const data = await Content.find(filter)
+    .populate("subjectId", "name code")
     .skip(skip)
     .limit(limit);
 

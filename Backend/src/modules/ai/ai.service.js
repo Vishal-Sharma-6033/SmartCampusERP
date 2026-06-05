@@ -2,6 +2,7 @@ import Exam from "../exam/exam.model.js";
 import Assignment from "../assignment/assignment.model.js";
 import User from "../user/user.model.js";
 import Result from "../exam/result.model.js";
+import Submission from "../assignment/submission.model.js";
 
 export const generateChatResponse = async (message) => {
   const msg = message.toLowerCase();
@@ -22,20 +23,22 @@ export const generateChatResponse = async (message) => {
 };
 
 export const analyzePerformance = async (studentId) => {
-  const exams = await Exam.find({ student: studentId });
-  const assignments = await Assignment.find({ student: studentId });
+  const results = await Result.find({ student: studentId }).populate("exam");
+  const submissions = await Submission.find({ studentId: studentId }).populate("assignmentId");
 
   let totalMarks = 0;
   let obtainedMarks = 0;
 
-  exams.forEach((exam) => {
-    totalMarks += exam.totalMarks || 0;
-    obtainedMarks += exam.obtainedMarks || 0;
+  results.forEach((res) => {
+    obtainedMarks += res.total || 0;
+    totalMarks += (res.subjects?.length || 1) * 100;
   });
 
-  assignments.forEach((a) => {
-    totalMarks += a.totalMarks || 0;
-    obtainedMarks += a.marksObtained || 0;
+  submissions.forEach((sub) => {
+    if (sub.marks !== null) {
+      obtainedMarks += sub.marks;
+      totalMarks += sub.assignmentId?.totalMarks || 100;
+    }
   });
 
   const percentage = totalMarks ? (obtainedMarks / totalMarks) * 100 : 0;
@@ -177,7 +180,8 @@ export const getPerformanceTrend = async (studentId) => {
 };
 
 export const getSmartResources = async (studentId) => {
-  const { weakSubjects } = await getWeakSubjects(studentId);
+  const weakData = await getWeakSubjects(studentId);
+  const weakSubjects = weakData?.weakSubjects || [];
 
   const resourceMap = {
     Math: ["RD Sharma", "Khan Academy"],

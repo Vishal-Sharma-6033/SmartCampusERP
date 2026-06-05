@@ -77,3 +77,8 @@ export const generateSeating = asyncHandler(async (req, res) => {
     new ApiResponse(200, data, "Seating generated successfully")
   );
 });
+
+export const getRegistrations = asyncHandler(async (req, res) => {
+  const data = await examService.getStudentRegistrations(req.user.id);
+  res.json(new ApiResponse(200, data));
+});
