@@ -26,7 +26,8 @@ router.get("/analytics", auth, role(ROLES.ADMIN), feeController.getAnalytics);
 
 router.get("/:studentId", auth, role(ROLES.ADMIN, ROLES.STUDENT), feeController.getFees);
 
-router.post("/scholarship", auth, role(ROLES.ADMIN, ROLES.STUDENT), auditMiddleware("APPLY_SCHOLARSHIP", "FEES"), feeController.applyScholarship);
+// ADMIN only — students must NOT be able to apply scholarships to their own fees
+router.post("/scholarship", auth, role(ROLES.ADMIN), auditMiddleware("APPLY_SCHOLARSHIP", "FEES"), feeController.applyScholarship);
 
 
 export default router;
