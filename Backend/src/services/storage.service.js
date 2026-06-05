@@ -1,6 +1,5 @@
-import cloudinary from 'cloudinary';
-cloudinary.v2;
-import fs from 'fs'
+import { v2 as cloudinary } from 'cloudinary';
+import fs from 'fs';
 
 // config
 cloudinary.config({
@@ -10,12 +9,12 @@ cloudinary.config({
 });
 
 // upload file
- export const upload = async (filePath) => {
+export const upload = async (filePath) => {
   const result = await cloudinary.uploader.upload(filePath, {
-    resource_type: "auto", // image, video, pdf sab handle karega
+    resource_type: 'auto', // handles image, video, pdf
   });
 
-  // local file delete
+  // delete local temp file after upload
   fs.unlinkSync(filePath);
 
   return {
@@ -24,39 +23,14 @@ cloudinary.config({
   };
 };
 
-
-// export const uploadBuffer = (buffer) => {
-
-//   return new Promise((resolve, reject) => {
-//     const stream = cloudinary.uploader.upload_stream(
-//       {
-//         folder: "receipts",
-//         resource_type: "raw", 
-//       },
-//       (error, result) => {
-//         if (result) resolve(result);
-//         else reject(error);
-//       }
-//     );
-
-//     streamifier.createReadStream(buffer).pipe(stream);
-//   });
-// };
-
-
-
-// delete file
- export const deletes = async (publicId) => {
+// delete file from cloudinary
+export const deletes = async (publicId) => {
   return await cloudinary.uploader.destroy(publicId);
 };
-
 
 const storageService = {
   upload,
   deletes,
-  // uploadBuffer,
-  
-  }
-
+};
 
 export default storageService;
